@@ -1,19 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { kv } from '@vercel/kv';
-
-interface SiteData {
-  id: string;
-  title: string;
-  html: string;
-  css: string;
-  author: string;
-  createdAt: number;
-  updatedAt: number;
-  views: number;
-}
+import { getDb } from './db';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Extract ID from the URL path /site/:id
   const url = new URL(req.url || '', `http://${req.headers.host}`);
   const pathParts = url.pathname.split('/').filter(Boolean);
   const id = pathParts[pathParts.length - 1];
@@ -23,19 +11,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const site = await kv.get<SiteData>(`site:${id}`);
+    const db = await getDb();
+    const site = await db.collection('sites').findOne({ id });
 
     if (!site) {
       return res.status(404).send(renderError(
         'Site Not Found',
-        `The site "${id}" does not exist on the BackNET.<br><br>It may have been consumed by the void between levels.`
+        `The site "${escapeHtml(id)}" does not exist on the BackNET.<br><br>It may have been consumed by the void between levels.`
       ));
     }
 
-    // Increment views
-    await kv.set(`site:${id}`, { ...site, views: site.views + 1 });
+    await db.collection('sites').updateOne({ id }, { $inc: { views: 1 } });
 
-    // Serve the user's website
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -78,42 +65,13 @@ function renderError(title: string, message: string): string {
   <title>${title} — BackNET</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: #0d0d00;
-      color: #FFD700;
-      font-family: 'VT323', monospace;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      text-align: center;
-      padding: 20px;
-    }
-    .container {
-      max-width: 500px;
-    }
-    h1 {
-      font-size: 36px;
-      margin-bottom: 8px;
-      text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-    }
-    p {
-      font-size: 18px;
-      color: #B8960F;
-      line-height: 1.6;
-      margin-bottom: 24px;
-    }
-    a {
-      color: #FFD700;
-      text-decoration: underline;
-      font-size: 16px;
-    }
-    .logo {
-      font-size: 14px;
-      color: #706020;
-      margin-top: 32px;
-    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#0d0d00;color:#FFD700;font-family:'VT323',monospace;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:20px}
+    .container{max-width:500px}
+    h1{font-size:36px;margin-bottom:8px;text-shadow:0 0 20px rgba(255,215,0,0.5)}
+    p{font-size:18px;color:#B8960F;line-height:1.6;margin-bottom:24px}
+    a{color:#FFD700;text-decoration:underline;font-size:16px}
+    .logo{font-size:14px;color:#706020;margin-top:32px}
   </style>
 </head>
 <body>
