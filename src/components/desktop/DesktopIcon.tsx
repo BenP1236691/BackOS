@@ -1,24 +1,22 @@
-import { useState, useCallback, type MouseEvent } from 'react';
+import { type MouseEvent } from 'react';
 
 interface DesktopIconProps {
+  appId: string;
   icon: string;
   label: string;
+  selected: boolean;
+  onClick: (e: MouseEvent) => void;
   onDoubleClick: () => void;
+  onContextMenu: (e: MouseEvent) => void;
 }
 
-export default function DesktopIcon({ icon, label, onDoubleClick }: DesktopIconProps) {
-  const [selected, setSelected] = useState(false);
-
-  const handleClick = useCallback((e: MouseEvent) => {
-    e.stopPropagation();
-    setSelected(true);
-  }, []);
-
+export default function DesktopIcon({ appId, icon, label, selected, onClick, onDoubleClick, onContextMenu }: DesktopIconProps) {
   return (
     <div
-      onClick={handleClick}
+      data-icon={appId}
+      onClick={onClick}
       onDoubleClick={onDoubleClick}
-      onBlur={() => setSelected(false)}
+      onContextMenu={onContextMenu}
       tabIndex={0}
       style={{
         display: 'flex',
