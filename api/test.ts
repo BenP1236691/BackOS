@@ -1,4 +1,4 @@
-import { pbkdf2Sync, randomBytes } from 'crypto';
+import { pbkdf2Sync, randomBytes } from 'node:crypto';
 import { getDb } from './db';
 
 export default async function handler(req: any, res: any) {
