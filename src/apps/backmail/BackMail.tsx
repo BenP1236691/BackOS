@@ -161,7 +161,7 @@ Thank you for your compliance. Compliance is mandatory.
   },
 ];
 
-export default function BackMail({ windowId }: Props) {
+export default function BackMail({ windowId: _windowId }: Props) {
   const { state } = useAppContext();
   const [selectedId, setSelectedId] = useState<number | null>(1);
   const [showCompose, setShowCompose] = useState(false);

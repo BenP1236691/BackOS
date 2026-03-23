@@ -7,7 +7,7 @@ interface Props {
 
 const BRUSH_SIZES = [2, 5, 10, 20];
 
-export default function DrawBack({ windowId }: Props) {
+export default function DrawBack({ windowId: _windowId }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [color, setColor] = useState('#FFD700');

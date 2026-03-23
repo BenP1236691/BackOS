@@ -52,7 +52,7 @@ p {
 
 type View = 'dashboard' | 'editor';
 
-export default function BackNetDeploy({ windowId }: Props) {
+export default function BackNetDeploy({ windowId: _windowId }: Props) {
   const { state } = useAppContext();
   const [view, setView] = useState<View>('dashboard');
   const [sites, setSites] = useState<SiteData[]>([]);

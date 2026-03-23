@@ -14,7 +14,7 @@ interface Message {
 
 let nextId = 1;
 
-export default function JohnBackrooms({ windowId }: Props) {
+export default function JohnBackrooms({ windowId: _windowId }: Props) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: nextId++,

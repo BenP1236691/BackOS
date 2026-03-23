@@ -22,7 +22,7 @@ interface FolderNode {
 
 const getUsername = (user: { username: string } | null) => user?.username || 'wanderer';
 
-const buildFileSystem = (username: string): FolderNode[] => [
+const buildFileSystem = (_username: string): FolderNode[] => [
   {
     name: 'BackOS',
     path: 'C:\\BackOS',
@@ -94,7 +94,7 @@ const buildFileSystem = (username: string): FolderNode[] => [
   },
 ];
 
-export default function BackFilesExplorer({ windowId }: Props) {
+export default function BackFilesExplorer({ windowId: _windowId }: Props) {
   const { state } = useAppContext();
   const username = getUsername(state.user);
   const fileSystem = buildFileSystem(username);

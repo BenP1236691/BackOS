@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useAppContext } from '../store/AppContext';
 import '../styles/win95.css';
 

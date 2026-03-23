@@ -42,7 +42,7 @@ const preBuiltResults = [
   },
 ];
 
-export default function BackNetExplorer({ windowId }: Props) {
+export default function BackNetExplorer({ windowId: _windowId }: Props) {
   const { state } = useAppContext();
   const [address, setAddress] = useState('backnet://search.backrooms.net');
   const [searchQuery, setSearchQuery] = useState('');
@@ -60,7 +60,7 @@ export default function BackNetExplorer({ windowId }: Props) {
     }
   }, [state.isOnline]);
 
-  const handleVisitSite = (siteId: string, title: string) => {
+  const handleVisitSite = (siteId: string, _title: string) => {
     setAddress(`backnet://sites.backrooms.net/${siteId}`);
     setViewingSite(siteId);
     setShowFakeResults(false);

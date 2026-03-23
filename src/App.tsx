@@ -1,4 +1,4 @@
-import { useCallback, useEffect, lazy, Suspense } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAppContext } from './store/AppContext';
 import { getAppDef } from './apps/registry';
 import BootScreen from './components/boot/BootScreen';

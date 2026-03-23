@@ -45,7 +45,7 @@ const games: Game[] = [
   },
 ];
 
-export default function BackStore({ windowId }: Props) {
+export default function BackStore({ windowId: _windowId }: Props) {
   const { state } = useAppContext();
   const [installed, setInstalled] = useState<Set<string>>(new Set());
 

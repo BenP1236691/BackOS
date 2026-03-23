@@ -16,7 +16,7 @@ const tabs: { id: TabId; label: string }[] = [
   { id: 'point', label: 'Point\u2122' },
 ];
 
-export default function BackOffice({ windowId }: Props) {
+export default function BackOffice({ windowId: _windowId }: Props) {
   const [activeTab, setActiveTab] = useState<TabId>('word');
 
   return (

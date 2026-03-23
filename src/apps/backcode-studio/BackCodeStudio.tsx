@@ -72,7 +72,7 @@ void theWatcher() {
 
 const LANGUAGES = ['SGML', 'HTML', 'CSS', 'JavaScript', 'C', 'C++', 'Python'];
 
-export default function BackCodeStudio({ windowId }: Props) {
+export default function BackCodeStudio({ windowId: _windowId }: Props) {
   const [code, setCode] = useState(DEFAULT_CODE);
   const [language, setLanguage] = useState('C');
   const [showEasterEgg, setShowEasterEgg] = useState(false);
