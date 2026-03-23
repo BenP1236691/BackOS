@@ -281,3 +281,126 @@
   50% { opacity: 0.4; }
   100% { opacity: 1; }
 }
+
+/* Tabs for HTML/CSS/JS */
+.editorTabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border-shadow);
+  background: var(--color-surface-dark);
+  flex-shrink: 0;
+}
+
+.editorTab {
+  padding: 4px 14px;
+  cursor: pointer;
+  font-size: 11px;
+  background: var(--color-surface-dark);
+  color: var(--color-text);
+  border: none;
+  border-right: 1px solid var(--border-shadow);
+}
+
+.editorTab:hover {
+  background: var(--color-surface-light);
+}
+
+.editorTabActive {
+  background: #1a1800;
+  color: #FFD700;
+  font-weight: bold;
+}
+
+/* Preview */
+.previewPane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-left: 2px solid var(--border-shadow);
+}
+
+.previewHeader {
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: bold;
+  background: var(--color-surface-dark);
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--border-shadow);
+}
+
+.previewFrame {
+  flex: 1;
+  border: none;
+  background: #fff;
+  width: 100%;
+}
+
+/* Deploy bar */
+.deployBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-top: 1px solid var(--border-shadow);
+  background: var(--color-surface);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.deployInput {
+  flex: 1;
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark);
+  background: var(--color-input-bg);
+  border: none;
+  padding: 2px 6px;
+  color: var(--color-text);
+  font-size: 11px;
+  outline: none;
+}
+
+.deployBtn {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light);
+  background: var(--color-surface);
+  border: none;
+  padding: 2px 10px;
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.deployBtn:active {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark);
+}
+
+.deployBtn:disabled {
+  color: var(--color-text-disabled);
+  cursor: default;
+}
+
+.deployStatus {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+}
+
+.editorAndPreview {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.editorColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
