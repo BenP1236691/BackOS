@@ -304,6 +304,10 @@ export default function BackMail({ windowId: _windowId }: Props) {
         <button className={styles.composeBtn} onClick={fetchMessages} disabled={loading}>
           {loading ? 'Checking...' : 'Refresh'}
         </button>
+        <span style={{ flex: 1 }} />
+        <span style={{ fontSize: 11, color: 'var(--color-text-secondary)', padding: '0 6px' }}>
+          📧 {username}@backrooms.net
+        </span>
       </div>
 
       <div className={styles.body}>
