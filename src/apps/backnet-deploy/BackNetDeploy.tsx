@@ -140,11 +140,16 @@ export default function BackNetDeploy({ windowId: _windowId }: Props) {
 
     setDeploying(true);
     try {
+      const authHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+        ...(state.user?.token ? { Authorization: `Bearer ${state.user.token}` } : {}),
+      };
+
       if (editId) {
         // Update existing
         const res = await fetch(`/api/sites/${editId}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: authHeaders,
           body: JSON.stringify({ title, html, css }),
         });
         if (!res.ok) throw new Error('Failed to update site');
@@ -153,13 +158,8 @@ export default function BackNetDeploy({ windowId: _windowId }: Props) {
         // Create new
         const res = await fetch('/api/sites', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title,
-            html,
-            css,
-            author: state.user?.username || 'anonymous',
-          }),
+          headers: authHeaders,
+          body: JSON.stringify({ title, html, css }),
         });
         if (!res.ok) throw new Error('Failed to deploy site');
         const data = await res.json();
@@ -176,7 +176,10 @@ export default function BackNetDeploy({ windowId: _windowId }: Props) {
 
   const handleDelete = async (id: string) => {
     try {
-      const res = await fetch(`/api/sites/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/sites/${id}`, {
+        method: 'DELETE',
+        headers: state.user?.token ? { Authorization: `Bearer ${state.user.token}` } : {},
+      });
       if (!res.ok) throw new Error('Failed to delete site');
       await fetchSites();
       if (editId === id) {

@@ -27,6 +27,7 @@ export type WallpaperOption = 'backos' | 'nostalgia' | 'frutiger-aero' | 'retro'
 
 export interface UserSession {
   username: string;
+  token?: string;
 }
 
 export interface AppState {

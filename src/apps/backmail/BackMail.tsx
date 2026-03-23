@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '../../store/AppContext';
 import styles from './BackMail.module.css';
 
@@ -6,20 +6,36 @@ interface Props {
   windowId: string;
 }
 
-interface Email {
-  id: number;
+interface Message {
+  id: string;
   from: string;
+  to: string;
   subject: string;
-  date: string;
   body: string;
+  timestamp: number;
+  read: boolean;
 }
 
-const emails: Email[] = [
+interface SystemEmail {
+  id: string;
+  from: string;
+  to: string;
+  subject: string;
+  body: string;
+  timestamp: number;
+  read: boolean;
+  isSystem: true;
+}
+
+const SYSTEM_EMAILS: SystemEmail[] = [
   {
-    id: 1,
+    id: 'sys-1',
     from: 'admin@backrooms.net',
     subject: 'Welcome to BackMail\u2122',
-    date: 'Date Unknown',
+    to: '',
+    timestamp: 0,
+    read: false,
+    isSystem: true,
     body: `Welcome to BackMail\u2122!
 
 Your account has been automatically created upon entering The Backrooms. No registration was necessary \u2014 we already know who you are.
@@ -38,10 +54,13 @@ The BackMail\u2122 Administration Team
 (We are always here)`,
   },
   {
-    id: 2,
+    id: 'sys-2',
     from: 'wanderer_42@backrooms.net',
     subject: 'Re: Have you found the exit?',
-    date: 'Day ????',
+    to: '',
+    timestamp: 0,
+    read: false,
+    isSystem: true,
     body: `I've been searching for so long. Level after level after level.
 
 Someone told me there's a door on Level 4 that leads out. I found a door, but it just led to another hallway. The same hallway. Over and over.
@@ -58,10 +77,13 @@ P.S. Don't trust the terminal. It watches.
 P.P.S. I'm sorry. I think I sent this message before. Time works differently here.`,
   },
   {
-    id: 3,
+    id: 'sys-3',
     from: 'unknown@backrooms.net',
     subject: 'URGENT: Entity spotted on Level 2',
-    date: 'TIMESTAMP ERROR',
+    to: '',
+    timestamp: 0,
+    read: false,
+    isSystem: true,
     body: `\u26a0\ufe0f ENTITY ALERT \u26a0\ufe0f
 
 A Smiler has been detected in Sector 7 of Level 2, near the pipe junction.
@@ -81,10 +103,13 @@ This is an automated alert. If you are reading this and it is too late, we apolo
 \u2014 BackNET Entity Detection System`,
   },
   {
-    id: 4,
+    id: 'sys-4',
     from: 'system@backrooms.net',
     subject: 'The Backroom\u2122 Cloud Sync Complete',
-    date: 'Today (probably)',
+    to: '',
+    timestamp: 0,
+    read: false,
+    isSystem: true,
     body: `Hello, valued user!
 
 Great news! Your files have been successfully synced to The Backroom\u2122 Cloud!
@@ -99,16 +124,19 @@ Your data is stored securely across multiple levels of The Backrooms. We guarant
 
 Thank you for trusting The Backroom\u2122 Cloud with your data. Not that you had a choice!
 
-Have a wonderful day! \u2615
+Have a wonderful day!
 \u2014 The Backroom\u2122 Cloud Team
 
 P.S. We noticed you haven't backed up your "exit_instructions.txt" file. Would you like us to take care of that? Just kidding \u2014 we already did. It's gone now.`,
   },
   {
-    id: 5,
+    id: 'sys-5',
     from: 'john.backrooms@backrooms.net',
     subject: 'I am always here =)',
-    date: '\u221e',
+    to: '',
+    timestamp: 0,
+    read: false,
+    isSystem: true,
     body: `Hello.
 
 I noticed you've been using Back OS\u2122 for a while now. I just wanted to check in and make sure everything is running smoothly.
@@ -127,10 +155,13 @@ John Backrooms
 P.S. The fluorescent light above your terminal flickered 3 times while you were reading this. You didn't notice, but I did.`,
   },
   {
-    id: 6,
+    id: 'sys-6',
     from: 'leaders@backrooms.net',
     subject: 'Mandatory Safety Protocol Update',
-    date: 'Quarterly Review',
+    to: '',
+    timestamp: 0,
+    read: false,
+    isSystem: true,
     body: `MEMO: Mandatory Safety Protocol Update v7.3.1
 TO: All Backrooms Personnel and Wanderers
 FROM: The Backrooms Leadership Committee
@@ -163,10 +194,87 @@ Thank you for your compliance. Compliance is mandatory.
 
 export default function BackMail({ windowId: _windowId }: Props) {
   const { state } = useAppContext();
-  const [selectedId, setSelectedId] = useState<number | null>(1);
+  const [selectedId, setSelectedId] = useState<string | null>('sys-1');
   const [showCompose, setShowCompose] = useState(false);
+  const [apiMessages, setApiMessages] = useState<Message[]>([]);
+  const [readIds, setReadIds] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [composeTo, setComposeTo] = useState('');
+  const [composeSubject, setComposeSubject] = useState('');
+  const [composeBody, setComposeBody] = useState('');
+  const [sending, setSending] = useState(false);
 
-  const selectedEmail = emails.find((e) => e.id === selectedId);
+  const username = state.user?.username;
+  const token = state.user?.token;
+
+  const fetchMessages = useCallback(async () => {
+    if (!username) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/messages?user=${encodeURIComponent(username)}`);
+      if (!res.ok) throw new Error('Failed to fetch messages');
+      const data = await res.json();
+      setApiMessages(data.messages || []);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [username]);
+
+  useEffect(() => {
+    if (state.isOnline && username) {
+      fetchMessages();
+    }
+  }, [state.isOnline, username, fetchMessages]);
+
+  const allMessages = [
+    ...apiMessages.map((m) => ({ ...m, isSystem: false as const })),
+    ...SYSTEM_EMAILS,
+  ];
+
+  const unreadCount = allMessages.filter(
+    (m) => !readIds.has(m.id) && !m.read
+  ).length;
+
+  const selectedMessage = allMessages.find((m) => m.id === selectedId);
+
+  const handleSelect = (id: string) => {
+    setSelectedId(id);
+    setReadIds((prev) => new Set(prev).add(id));
+  };
+
+  const handleSend = async () => {
+    if (!token || !composeTo || !composeSubject || !composeBody) return;
+    setSending(true);
+    try {
+      const res = await fetch('/api/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          to: composeTo,
+          from: username,
+          subject: composeSubject,
+          body: composeBody,
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to send message');
+      setShowCompose(false);
+      setComposeTo('');
+      setComposeSubject('');
+      setComposeBody('');
+      fetchMessages();
+    } catch (err: any) {
+      alert('Send failed: ' + err.message);
+    } finally {
+      setSending(false);
+    }
+  };
 
   if (!state.isOnline) {
     return (
@@ -176,7 +284,7 @@ export default function BackMail({ windowId: _windowId }: Props) {
         </div>
         <div className={styles.offlinePage}>
           <div className={styles.offlineIcon}>X</div>
-          <div className={styles.offlineTitle}>Cannot connect to BackMail\u2122 server</div>
+          <div className={styles.offlineTitle}>Cannot connect to BackMail&#8482; server</div>
           <div className={styles.offlineMsg}>
             Please verify your BackNET connection and try again.
             If you are between levels, service may be temporarily unavailable.
@@ -193,32 +301,47 @@ export default function BackMail({ windowId: _windowId }: Props) {
     <div className={styles.container}>
       <div className={styles.toolbar}>
         <button className={styles.composeBtn} onClick={() => setShowCompose(true)}>Compose</button>
+        <button className={styles.composeBtn} onClick={fetchMessages} disabled={loading}>
+          {loading ? 'Checking...' : 'Refresh'}
+        </button>
       </div>
 
       <div className={styles.body}>
         <div className={styles.inbox}>
-          {emails.map((email) => (
+          {error && (
+            <div style={{ padding: 8, color: 'var(--color-error)', fontSize: 11 }}>
+              Error: {error}
+            </div>
+          )}
+          {allMessages.map((msg) => (
             <div
-              key={email.id}
-              className={`${styles.emailItem} ${selectedId === email.id ? styles.emailItemSelected : ''}`}
-              onClick={() => setSelectedId(email.id)}
+              key={msg.id}
+              className={`${styles.emailItem} ${selectedId === msg.id ? styles.emailItemSelected : ''}`}
+              onClick={() => handleSelect(msg.id)}
+              style={{
+                fontWeight: !readIds.has(msg.id) && !msg.read ? 'bold' : 'normal',
+              }}
             >
-              <div className={styles.emailFrom}>{email.from}</div>
-              <div className={styles.emailSubject}>{email.subject}</div>
-              <div className={styles.emailPreview}>{email.body.slice(0, 60)}...</div>
+              <div className={styles.emailFrom}>{msg.from}</div>
+              <div className={styles.emailSubject}>{msg.subject}</div>
+              <div className={styles.emailPreview}>{msg.body.slice(0, 60)}...</div>
             </div>
           ))}
         </div>
 
         <div className={styles.emailView}>
-          {selectedEmail ? (
+          {selectedMessage ? (
             <>
               <div className={styles.emailHeader}>
-                <div className={styles.emailHeaderSubject}>{selectedEmail.subject}</div>
-                <div className={styles.emailHeaderFrom}>From: {selectedEmail.from}</div>
-                <div className={styles.emailHeaderDate}>Date: {selectedEmail.date}</div>
+                <div className={styles.emailHeaderSubject}>{selectedMessage.subject}</div>
+                <div className={styles.emailHeaderFrom}>From: {selectedMessage.from}</div>
+                <div className={styles.emailHeaderDate}>
+                  Date: {selectedMessage.timestamp
+                    ? new Date(selectedMessage.timestamp).toLocaleString()
+                    : 'Date Unknown'}
+                </div>
               </div>
-              <div className={styles.emailBody}>{selectedEmail.body}</div>
+              <div className={styles.emailBody}>{selectedMessage.body}</div>
             </>
           ) : (
             <div className={styles.noEmail}>Select a message to read</div>
@@ -236,21 +359,42 @@ export default function BackMail({ windowId: _windowId }: Props) {
             <div className={styles.composeBody}>
               <div className={styles.composeField}>
                 <span className={styles.composeLabel}>To:</span>
-                <input className={styles.composeInput} placeholder="wanderer@backrooms.net" />
+                <input
+                  className={styles.composeInput}
+                  placeholder="wanderer@backrooms.net"
+                  value={composeTo}
+                  onChange={(e) => setComposeTo(e.target.value)}
+                />
               </div>
               <div className={styles.composeField}>
                 <span className={styles.composeLabel}>Subject:</span>
-                <input className={styles.composeInput} placeholder="Subject" />
+                <input
+                  className={styles.composeInput}
+                  placeholder="Subject"
+                  value={composeSubject}
+                  onChange={(e) => setComposeSubject(e.target.value)}
+                />
               </div>
-              <textarea className={styles.composeTextarea} placeholder="Type your message..." />
-              <button className={styles.composeSendBtn} onClick={() => setShowCompose(false)}>Send</button>
+              <textarea
+                className={styles.composeTextarea}
+                placeholder="Type your message..."
+                value={composeBody}
+                onChange={(e) => setComposeBody(e.target.value)}
+              />
+              <button
+                className={styles.composeSendBtn}
+                onClick={handleSend}
+                disabled={sending || !composeTo || !composeSubject || !composeBody}
+              >
+                {sending ? 'Sending...' : 'Send'}
+              </button>
             </div>
           </div>
         </div>
       )}
 
       <div className={styles.statusBar}>
-        <span>{emails.length} messages | Connected to BackMail\u2122 Server</span>
+        <span>Inbox ({unreadCount}) | {allMessages.length} messages | Connected to BackMail&#8482; Server</span>
       </div>
     </div>
   );

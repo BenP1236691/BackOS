@@ -12,10 +12,17 @@ interface SiteData {
   views: number;
 }
 
+async function getAuthUser(req: VercelRequest): Promise<string | null> {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  if (!token) return null;
+  const session = await kv.get<{ username: string }>(`session:${token}`);
+  return session?.username || null;
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -40,9 +47,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === 'PUT') {
+      const authUser = await getAuthUser(req);
+      if (!authUser) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
       const existing = await kv.get<SiteData>(`site:${id}`);
       if (!existing) {
         return res.status(404).json({ error: 'Site not found' });
+      }
+
+      if (existing.author !== authUser) {
+        return res.status(403).json({ error: 'You can only edit your own sites' });
       }
 
       const { title, html, css } = req.body;
@@ -60,6 +76,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === 'DELETE') {
+      const authUser = await getAuthUser(req);
+      if (!authUser) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      const existing = await kv.get<SiteData>(`site:${id}`);
+      if (!existing) {
+        return res.status(404).json({ error: 'Site not found' });
+      }
+
+      if (existing.author !== authUser) {
+        return res.status(403).json({ error: 'You can only delete your own sites' });
+      }
+
       await kv.del(`site:${id}`);
       await kv.srem('sites:index', id);
       return res.status(200).json({ deleted: true });

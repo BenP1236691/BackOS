@@ -13,16 +13,44 @@ const WALLPAPERS: { id: WallpaperOption; name: string; color: string }[] = [
 
 export default function SettingsPanel() {
   const { state, dispatch } = useAppContext();
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [saved, setSaved] = useState(false);
+  const [passwordStatus, setPasswordStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [passwordError, setPasswordError] = useState('');
 
   const handleClose = () => dispatch({ type: 'TOGGLE_SETTINGS' });
 
-  const handleSavePassword = () => {
-    if (newPassword.trim()) {
-      setSaved(true);
+  const handleSavePassword = async () => {
+    if (!currentPassword.trim() || !newPassword.trim()) return;
+
+    setPasswordStatus('saving');
+    setPasswordError('');
+
+    try {
+      const res = await fetch('/api/auth/password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${state.user?.token || ''}`,
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setPasswordError(data.error || 'Failed to change password');
+        setPasswordStatus('error');
+        return;
+      }
+
+      setPasswordStatus('saved');
+      setCurrentPassword('');
       setNewPassword('');
-      setTimeout(() => setSaved(false), 2000);
+      setTimeout(() => setPasswordStatus('idle'), 2000);
+    } catch {
+      setPasswordError('Could not connect to server');
+      setPasswordStatus('error');
     }
   };
 
@@ -35,6 +63,17 @@ export default function SettingsPanel() {
         </div>
 
         <div className={styles.body}>
+          {/* Account */}
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>Account</div>
+            <div className={styles.field}>
+              <span className={styles.label}>Logged in as:</span>
+              <span style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--color-primary)' }}>
+                {state.user?.username || 'anonymous'}
+              </span>
+            </div>
+          </div>
+
           {/* Dark Mode */}
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Display</div>
@@ -70,22 +109,44 @@ export default function SettingsPanel() {
           </div>
 
           {/* Password */}
-          <div className={styles.section}>
-            <div className={styles.sectionTitle}>Security</div>
-            <div className={styles.field}>
-              <span className={styles.label}>New Password:</span>
-              <input
-                className={`win95-input ${styles.input}`}
-                type="password"
-                value={newPassword}
-                onChange={e => setNewPassword(e.target.value)}
-                placeholder="••••••••"
-              />
-              <button className="win95-button" onClick={handleSavePassword} style={{ minWidth: '60px' }}>
-                {saved ? '✓ Saved' : 'Change'}
-              </button>
+          {state.user?.token && (
+            <div className={styles.section}>
+              <div className={styles.sectionTitle}>Security</div>
+              <div className={styles.field}>
+                <span className={styles.label}>Current:</span>
+                <input
+                  className={`win95-input ${styles.input}`}
+                  type="password"
+                  value={currentPassword}
+                  onChange={e => setCurrentPassword(e.target.value)}
+                  placeholder="••••••••"
+                />
+              </div>
+              <div className={styles.field}>
+                <span className={styles.label}>New:</span>
+                <input
+                  className={`win95-input ${styles.input}`}
+                  type="password"
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  placeholder="••••••••"
+                />
+                <button
+                  className="win95-button"
+                  onClick={handleSavePassword}
+                  disabled={passwordStatus === 'saving'}
+                  style={{ minWidth: '60px' }}
+                >
+                  {passwordStatus === 'saving' ? '...' : passwordStatus === 'saved' ? '✓' : 'Change'}
+                </button>
+              </div>
+              {passwordError && (
+                <div style={{ fontSize: '11px', color: '#cc4444', marginTop: '4px' }}>
+                  {passwordError}
+                </div>
+              )}
             </div>
-          </div>
+          )}
 
           {/* Network */}
           <div className={styles.section}>

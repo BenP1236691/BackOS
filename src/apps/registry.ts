@@ -73,6 +73,38 @@ export const APP_REGISTRY: AppDefinition[] = [
     defaultHeight: 550,
     showOnDesktop: true,
   },
+  {
+    id: 'backcord',
+    name: 'BackCord™',
+    icon: '💬',
+    defaultWidth: 800,
+    defaultHeight: 550,
+    showOnDesktop: true,
+  },
+  {
+    id: 'backit',
+    name: 'BackIt™',
+    icon: '📰',
+    defaultWidth: 750,
+    defaultHeight: 550,
+    showOnDesktop: true,
+  },
+  {
+    id: 'backchan',
+    name: 'BackChan™',
+    icon: '🗿',
+    defaultWidth: 700,
+    defaultHeight: 550,
+    showOnDesktop: true,
+  },
+  {
+    id: 'the-backroom',
+    name: 'The BackRoom™',
+    icon: '🏛️',
+    defaultWidth: 800,
+    defaultHeight: 550,
+    showOnDesktop: true,
+  },
 ];
 
 export function getAppDef(appId: string): AppDefinition | undefined {

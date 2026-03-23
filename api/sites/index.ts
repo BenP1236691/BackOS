@@ -15,7 +15,7 @@ interface SiteData {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -39,7 +39,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === 'POST') {
-      const { title, html, css, author } = req.body;
+      // Authenticate
+      const token = req.headers.authorization?.replace('Bearer ', '');
+      let author = 'anonymous';
+      if (token) {
+        const session = await kv.get<{ username: string }>(`session:${token}`);
+        if (session) {
+          author = session.username;
+        }
+      }
+
+      const { title, html, css } = req.body;
 
       if (!title || !html) {
         return res.status(400).json({ error: 'Title and HTML are required' });
@@ -54,7 +64,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         title: String(title).slice(0, 100),
         html: String(html).slice(0, 50000),
         css: String(css || '').slice(0, 20000),
-        author: String(author || 'anonymous').slice(0, 50),
+        author,
         createdAt: now,
         updatedAt: now,
         views: 0,

@@ -212,3 +212,100 @@
   color: var(--color-text-secondary);
   margin-bottom: 8px;
 }
+
+/* Wiki page styles */
+.wikiPage {
+  padding: 16px 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  user-select: text;
+}
+
+.wikiTitle {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--color-primary-dark);
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--border-shadow);
+}
+
+.wikiContent {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.wikiContent a {
+  color: #0000AA;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.wikiContent a:hover {
+  color: #6600AA;
+}
+
+.wikiContent h1, .wikiContent h2, .wikiContent h3 {
+  color: var(--color-primary-dark);
+  margin: 16px 0 8px;
+}
+
+.wikiContent h1 { font-size: 20px; }
+.wikiContent h2 { font-size: 17px; }
+.wikiContent h3 { font-size: 14px; }
+
+.wikiContent p {
+  margin-bottom: 10px;
+}
+
+.wikiContent ul, .wikiContent ol {
+  margin: 8px 0 8px 24px;
+}
+
+.wikiContent li {
+  margin-bottom: 4px;
+}
+
+.wikiContent table {
+  border-collapse: collapse;
+  margin: 12px 0;
+  width: 100%;
+}
+
+.wikiContent td, .wikiContent th {
+  border: 1px solid var(--border-shadow);
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.wikiContent th {
+  background: var(--color-surface-dark);
+  font-weight: bold;
+}
+
+.wikiContent blockquote {
+  border-left: 3px solid var(--color-primary);
+  padding: 8px 12px;
+  margin: 8px 0;
+  background: rgba(255, 215, 0, 0.05);
+}
+
+.wikiContent img {
+  max-width: 100%;
+  height: auto;
+}
+
+.wikiLoading {
+  text-align: center;
+  padding: 40px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.wikiError {
+  text-align: center;
+  padding: 40px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
