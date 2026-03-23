@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import crypto from 'crypto';
+import * as crypto from 'crypto';
 import { getDb } from './db';
 
 // ============================================================
@@ -508,33 +508,49 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCors(res);
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const { segments } = parseRoute(req.url || '');
+  try {
+    const { segments } = parseRoute(req.url || '');
 
-  if (segments[0] === 'auth' && segments[1] === 'login') return handleAuthLogin(req, res);
-  if (segments[0] === 'auth' && segments[1] === 'register') return handleAuthRegister(req, res);
-  if (segments[0] === 'auth' && segments[1] === 'verify') return handleAuthVerify(req, res);
-  if (segments[0] === 'auth' && segments[1] === 'password') return handleAuthPassword(req, res);
+    // Health check
+    if (segments[0] === 'health') {
+      try {
+        const db = await getDb();
+        await db.command({ ping: 1 });
+        return res.status(200).json({ status: 'ok', db: 'connected' });
+      } catch (err: any) {
+        return res.status(500).json({ status: 'error', error: err.message });
+      }
+    }
 
-  if (segments[0] === 'sites') {
-    if (segments.length === 1 || segments[1] === '') return handleSitesList(req, res);
-    return handleSiteById(req, res, segments[1]);
+    if (segments[0] === 'auth' && segments[1] === 'login') return handleAuthLogin(req, res);
+    if (segments[0] === 'auth' && segments[1] === 'register') return handleAuthRegister(req, res);
+    if (segments[0] === 'auth' && segments[1] === 'verify') return handleAuthVerify(req, res);
+    if (segments[0] === 'auth' && segments[1] === 'password') return handleAuthPassword(req, res);
+
+    if (segments[0] === 'sites') {
+      if (segments.length === 1 || segments[1] === '') return handleSitesList(req, res);
+      return handleSiteById(req, res, segments[1]);
+    }
+
+    if (segments[0] === 'wiki') return handleWiki(req, res);
+    if (segments[0] === 'seed') return handleSeed(req, res);
+    if (segments[0] === 'messages') return handleMessages(req, res);
+
+    if (segments[0] === 'posts') {
+      if (segments.length === 1 || segments[1] === '') return handlePostsList(req, res);
+      return handlePostById(req, res, segments[1]);
+    }
+
+    if (segments[0] === 'forum') {
+      if (segments.length === 1 || segments[1] === '') return handleForumList(req, res);
+      return handleForumById(req, res, segments[1]);
+    }
+
+    if (segments[0] === 'chat') return handleChat(req, res);
+
+    return res.status(404).json({ error: 'Not found' });
+  } catch (err: any) {
+    console.error('Unhandled API error:', err);
+    return res.status(500).json({ error: 'Internal server error', details: err.message });
   }
-
-  if (segments[0] === 'wiki') return handleWiki(req, res);
-  if (segments[0] === 'seed') return handleSeed(req, res);
-  if (segments[0] === 'messages') return handleMessages(req, res);
-
-  if (segments[0] === 'posts') {
-    if (segments.length === 1 || segments[1] === '') return handlePostsList(req, res);
-    return handlePostById(req, res, segments[1]);
-  }
-
-  if (segments[0] === 'forum') {
-    if (segments.length === 1 || segments[1] === '') return handleForumList(req, res);
-    return handleForumById(req, res, segments[1]);
-  }
-
-  if (segments[0] === 'chat') return handleChat(req, res);
-
-  return res.status(404).json({ error: 'Not found' });
 }
