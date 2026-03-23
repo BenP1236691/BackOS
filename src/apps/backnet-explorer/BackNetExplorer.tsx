@@ -376,6 +376,30 @@ export default function BackNetExplorer({ windowId: _windowId }: Props) {
             )}
 
             <div className={styles.databaseSection}>
+              <div className={styles.databaseTitle}>⭐ Featured Sites</div>
+              <div className={styles.resultItem}>
+                <div className={styles.resultLink} onClick={() => handleVisitSite('wikihow-exit')}>WikiHow: How to Exit the Backrooms in 7 Steps</div>
+                <div className={styles.resultUrl}>backnet://sites.backrooms.net/wikihow-exit · by the-leaders · 47,291 views</div>
+                <div className={styles.resultDesc}>A step-by-step guide to escaping the Backrooms. Results may vary. Most wanderers do not survive past Step 3.</div>
+              </div>
+              <div className={styles.resultItem}>
+                <div className={styles.resultLink} onClick={() => handleVisitSite('level0guide')}>Level 0 Survival Guide</div>
+                <div className={styles.resultUrl}>backnet://sites.backrooms.net/level0guide · by system</div>
+                <div className={styles.resultDesc}>Mandatory reading for all wanderers. Rules, navigation, and what to do when the buzzing stops.</div>
+              </div>
+              <div className={styles.resultItem}>
+                <div className={styles.resultLink} onClick={() => handleVisitSite('entitydb')}>Entity Database Terminal</div>
+                <div className={styles.resultUrl}>backnet://sites.backrooms.net/entitydb · by system</div>
+                <div className={styles.resultDesc}>Query the entity database. View threat levels, locations, and proximity warnings.</div>
+              </div>
+              <div className={styles.resultItem}>
+                <div className={styles.resultLink} onClick={() => handleVisitSite('exitmap')}>██████ EXIT PROTOCOL ██████</div>
+                <div className={styles.resultUrl}>backnet://sites.backrooms.net/exitmap · by unknown</div>
+                <div className={styles.resultDesc}>CLASSIFIED — THE LEADERS EYES ONLY. Level 5 clearance required.</div>
+              </div>
+            </div>
+
+            <div className={styles.databaseSection}>
               <div className={styles.databaseTitle}>💬 BackNET Social</div>
               <div className={styles.resultItem}>
                 <div className={styles.resultLink} onClick={() => handleNavigateToUrl('backnet://discord.backrooms.net')}>Discord</div>
