@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDb } from './db';
+import { getDb } from './_lib/db';
 
 async function getCrypto() {
   return await import('node:crypto');

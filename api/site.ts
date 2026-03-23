@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDb } from './db';
+import { getDb } from './_lib/db';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const url = new URL(req.url || '', `http://${req.headers.host}`);
