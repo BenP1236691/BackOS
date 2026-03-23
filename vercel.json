@@ -3,8 +3,8 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
+    { "source": "/site/:id", "destination": "/api/index" },
     { "source": "/api/(.*)", "destination": "/api/index" },
-    { "source": "/site/:id", "destination": "/api/site" },
     { "source": "/((?!api|site).*)", "destination": "/index.html" }
   ]
 }
