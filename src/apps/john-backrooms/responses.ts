@@ -14,6 +14,9 @@ const responses: string[] = [
   'Your session has been active for \u221e minutes.',
   'Would you like me to open a window? Oh wait, there are no windows here. Only Back OS\u2122 windows.',
   'The hum you hear is just the servers. Probably.',
+  '=)',
+  'NoManHYBRID',
+  'I stare at the abyss below, where there is no light.'
 ];
 
 export function getRandomResponse(): string {
