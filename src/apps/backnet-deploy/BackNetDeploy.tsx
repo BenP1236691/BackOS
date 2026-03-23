@@ -412,7 +412,7 @@ export default function BackNetDeploy({ windowId: _windowId }: Props) {
                 <iframe
                   ref={previewRef}
                   className={styles.previewFrame}
-                  sandbox="allow-same-origin"
+                  sandbox="allow-same-origin allow-scripts"
                   title="Site Preview"
                 />
               </div>
