@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import * as crypto from 'crypto';
+import { createHmac, pbkdf2Sync, randomBytes } from 'crypto';
 import { getDb } from './db';
 
 // ============================================================
@@ -74,11 +74,11 @@ interface ChatMessage {
 // ============================================================
 
 function hashPassword(password: string, salt: string): string {
-  return crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
+  return pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
 }
 
 function generateToken(): string {
-  return crypto.randomBytes(32).toString('hex');
+  return randomBytes(32).toString('hex');
 }
 
 function generateId(): string {
@@ -189,7 +189,7 @@ async function handleAuthRegister(req: VercelRequest, res: VercelResponse) {
     const db = await getDb();
     const existing = await db.collection('users').findOne({ username: cleanUsername });
     if (existing) return res.status(409).json({ error: 'Username already taken' });
-    const salt = crypto.randomBytes(16).toString('hex');
+    const salt = randomBytes(16).toString('hex');
     const passwordHash = hashPassword(String(password), salt);
     await db.collection('users').insertOne({ username: cleanUsername, passwordHash, salt, createdAt: Date.now() });
     const token = generateToken();
@@ -231,7 +231,7 @@ async function handleAuthPassword(req: VercelRequest, res: VercelResponse) {
     if (!user) return res.status(404).json({ error: 'User not found' });
     const currentHash = hashPassword(String(currentPassword), user.salt);
     if (currentHash !== user.passwordHash) return res.status(401).json({ error: 'Current password is incorrect' });
-    const newSalt = crypto.randomBytes(16).toString('hex');
+    const newSalt = randomBytes(16).toString('hex');
     const newHash = hashPassword(String(newPassword), newSalt);
     await db.collection('users').updateOne({ username: session.username }, { $set: { passwordHash: newHash, salt: newSalt } });
     return res.status(200).json({ success: true });
