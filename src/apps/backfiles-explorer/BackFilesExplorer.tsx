@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '../../store/AppContext';
 import styles from './BackFilesExplorer.module.css';
 
@@ -7,241 +7,358 @@ interface Props {
 }
 
 interface FileEntry {
+  id: string;
   name: string;
   type: 'file' | 'folder';
-  size?: string;
-  content?: string;
-}
-
-interface FolderNode {
-  name: string;
   path: string;
-  children?: FolderNode[];
-  files: FileEntry[];
+  content?: string;
+  size?: number;
+  owner: string;
+  system?: boolean;
+  updatedAt?: number;
 }
 
-const getUsername = (user: { username: string } | null) => user?.username || 'wanderer';
-
-const buildFileSystem = (_username: string): FolderNode[] => [
-  {
-    name: 'BackOS',
-    path: 'C:\\BackOS',
-    files: [
-      { name: 'system.ini', type: 'file', size: '1.2 KB', content: '[BackOS Configuration]\nversion=95.backrooms\ntheme=fluorescent_yellow\nexit_enabled=false\nentity_monitoring=ACTIVE\nwall_texture=damp_carpet\nhum_frequency=60Hz\n\n; Do not modify these values\n; The system knows what is best for you' },
-      { name: 'autoexec.bat', type: 'file', size: '0.8 KB', content: '@echo off\necho Welcome to Back OS...\necho Initializing entity detection...\necho Loading fluorescent environment...\necho You are now in Level 0.\necho There is no exit command.\npause >nul' },
-    ],
-  },
-  {
-    name: 'Level_0',
-    path: 'C:\\Level_0',
-    files: [
-      { name: 'safety_guide.txt', type: 'file', size: '2.1 KB', content: 'LEVEL 0 SAFETY GUIDE\n====================\n\n1. Stay in well-lit areas\n2. Do not investigate strange sounds\n3. The buzzing is normal\n4. If you see a door, do not open it\n5. If a door opens by itself, walk away slowly\n6. The wet carpet smell is permanent\n7. You are being watched. This is for your safety.\n8. Do not count the rooms. The number changes.\n9. If the lights flicker, stand still.\n10. There is no Level -1. Stop asking.' },
-      { name: 'fluorescent_log.dat', type: 'file', size: '4.7 KB', content: 'FLUORESCENT LIGHT LOG - LEVEL 0\n================================\nTimestamp: [CORRUPTED]\nLight #00001: ACTIVE - 60Hz - Normal\nLight #00002: ACTIVE - 60Hz - Normal\nLight #00003: ACTIVE - 61Hz - WARNING\nLight #00004: ACTIVE - 60Hz - Normal\nLight #00005: INACTIVE - REPLACED\nLight #00006: ACTIVE - 60Hz - Normal\nLight #04571: ACTIVE - 60Hz - Normal\n...\nLight #99999: ACTIVE - 0Hz - [DATA EXPUNGED]\n\nNote: Light #00003 has been flagged.\nEntity presence suspected near fixture.\nDo not service. Do not approach.' },
-    ],
-  },
-  {
-    name: 'Level_1',
-    path: 'C:\\Level_1',
-    files: [
-      { name: 'habitable_zones.map', type: 'file', size: '8.3 KB', content: 'HABITABLE ZONE MAP - LEVEL 1\n=============================\nZone A: Warehouse Section 1-47\n  Status: SAFE (last verified: ████)\n  Resources: Almond Water (limited)\n\nZone B: Storage Corridor\n  Status: CAUTION\n  Note: Entity sightings reported\n\nZone C: Loading Dock\n  Status: DANGER - DO NOT ENTER\n  Note: Last 3 explorers did not return\n\nZone D: [REDACTED]\n  Status: [REDACTED]\n  Note: This zone does not exist.\n        Please stop looking for it.' },
-      { name: 'entity_warning.txt', type: 'file', size: '1.5 KB', content: 'ENTITY WARNING - LEVEL 1\n========================\nMultiple entity sightings confirmed.\n\nType: Hound\nLocation: Zone B, corridors 12-18\nBehavior: Patrolling\nThreat: HIGH\n\nType: Smiler\nLocation: Dark corners throughout\nBehavior: Waiting\nThreat: EXTREME\n\nREMINDER: If you see eyes in the\ndarkness, DO NOT smile back.' },
-    ],
-  },
-  {
-    name: 'Level_2',
-    path: 'C:\\Level_2',
-    files: [
-      { name: 'pipe_system.schematic', type: 'file', size: '12.1 KB', content: 'PIPE SYSTEM SCHEMATIC - LEVEL 2\n================================\n     __|__|__|__|__\n    |  |  |  |  |  |\n====|==|==|==|==|==|====\n    |  |  |  |  |  |\n    |__|__|__|__|__|\n\nPipe Temperature: 47.3C (CAUTION)\nPipe Content: Unknown fluid\nPipe Sound: Rhythmic thumping\n\nWARNING: The pipes are not inanimate.\nThey respond to touch.\nDo not tap on them.\nDo not listen too closely.\nThe rhythm is not random.' },
-      { name: 'ambient_noise.wav', type: 'file', size: '156 KB', content: '[AUDIO FILE]\nCannot display audio content.\n\nMetadata:\n  Duration: INFINITE\n  Sample Rate: 44100Hz\n  Channels: Unknown\n  Description: Ambient hum from Level 2\n\nWARNING: Prolonged listening may cause\ndisorientation, paranoia, and an\nunshakeable feeling of being followed.\n\nDo not use headphones.' },
-    ],
-  },
-  {
-    name: 'Entity_Data',
-    path: 'C:\\Entity_Data',
-    children: [
-      {
-        name: 'Smiler',
-        path: 'C:\\Entity_Data\\Smiler',
-        files: [
-          { name: 'behavioral_patterns.dat', type: 'file', size: '3.4 KB', content: 'ENTITY 1: SMILER - BEHAVIORAL ANALYSIS\n=======================================\nClassification: Hostile\nHabitat: Dark areas, all levels\nIdentification: Luminescent eyes, wide grin\n\nBehavior Patterns:\n- Stationary until prey detected\n- Attracted to light sources\n- Attracted to eye contact\n- Will pursue if acknowledged\n\nMovement Speed: Unknown\nAttack Pattern: Unknown (no survivors)\nWeakness: Sustained light exposure\n\nNote from researcher:\n"I have been studying them for weeks.\nI think they know. Yesterday I found\nteeth marks on my notebook.\nI sleep with the lights on now.\nIt doesn\'t help. They smile in the light too."' },
-          { name: 'avoidance_protocol.txt', type: 'file', size: '1.8 KB', content: 'SMILER AVOIDANCE PROTOCOL B-7\n==============================\n1. Maintain light sources at all times\n2. NEVER make direct eye contact\n3. If you see a grin in the darkness:\n   a. Do not acknowledge it\n   b. Slowly back away\n   c. Do not turn your back\n   d. Find a lit area immediately\n4. If cornered:\n   a. Close your eyes\n   b. Count to ten\n   c. Hope\n\nSurvival Rate: 23%\n\nAmendment: Survival rate may be\ninflated. We cannot verify because\nmost "survivors" refuse to speak\nabout what happened.' },
-        ],
-      },
-      {
-        name: 'Hound',
-        path: 'C:\\Entity_Data\\Hound',
-        files: [
-          { name: 'tracking_data.dat', type: 'file', size: '2.9 KB', content: 'ENTITY CLASSIFICATION: HOUND\n=============================\nSpeed: Fast\nAggression: High when provoked\nSensory: Primarily auditory\n\nAvoidance: Remain silent.\nDo not run. Do not breathe loudly.\n\nLast known positions:\n  Level 1, Zone B: 3 confirmed\n  Level 2, Tunnel 7: 1 confirmed\n  Level 0, Room ████: [REDACTED]\n\nNote: Hounds hunt in packs.\nIf you see one, there are more.' },
-        ],
-      },
-      {
-        name: 'Skin-Stealer',
-        path: 'C:\\Entity_Data\\Skin-Stealer',
-        files: [
-          { name: 'identification_guide.txt', type: 'file', size: '2.2 KB', content: 'ENTITY: SKIN-STEALER\n=====================\nDanger Level: EXTREME\n\nIdentification:\n- Appears human at first glance\n- Mimics voices of known individuals\n- Skin appears slightly translucent\n- Eyes do not reflect light correctly\n\nIf you encounter someone you know\nin the Backrooms, verify their identity.\n\nVerification Protocol:\n1. Ask something only they would know\n2. Watch for micro-expressions\n3. Check if their shadow matches\n4. If ANY doubt exists: RUN\n\nRemember: Your friend is not here.\nNobody you know is here.\nAnyone who claims otherwise is lying.' },
-        ],
-      },
-    ],
-    files: [],
-  },
-  {
-    name: `Users`,
-    path: `C:\\Users\\{username}`,
-    files: [
-      { name: 'exit_instructions_CORRUPTED.txt', type: 'file', size: '0.3 KB', content: 'T̸̢o̶ ̵e̵x̶i̸t̴ ̷t̷h̸e̷ ̷B̵a̴c̶k̸r̸o̸o̶m̴s̵,̷ ̴y̴o̸u̵ ̵m̷u̸s̶t̸:\n\n1̶.̸ ̷F̵i̸n̷d̵ ̵t̸h̵e̷ ̵d̷o̴o̶r̷ ̸t̵h̷a̸t̵ ̸d̴o̵e̵s̸n̵\'̷t̸ ̸b̶e̶l̸o̶n̷g̷\n2̸.̶ ̴T̶u̶r̶n̸ ̸t̵h̸e̶ ̸h̸a̸n̵d̵l̵e̸ ̶c̸o̷u̴n̸t̶e̵r̴-̷\n3̵.̵ ̵S̸a̷y̵ ̵t̵h̶e̸ ̵w̸o̶r̸d̷s̴ ̷"̵[̸C̸O̸R̶R̶U̶P̵T̸E̷D̶]̴"̸\n4̵.̵ ̶[̶D̵A̷T̷A̷ ̶L̸O̶S̸T̵]̷\n5̸.̵ ̶[̷D̵A̴T̸A̸ ̵L̷O̵S̸T̶]̸\n\nW̷A̵R̸N̷I̶N̸G̸:̷ ̸T̵h̷i̴s̶ ̸f̷i̸l̸e̷ ̴h̶a̴s̷ ̸b̷e̴e̶n̸\nc̵o̴r̶r̷u̸p̸t̸e̵d̷.̵ ̴P̷e̴r̶h̸a̷p̵s̷ ̴i̷n̵t̷e̵n̸t̵i̶o̸n̸a̸l̵l̵y̵.̴' },
-      { name: 'journal_entry_01.txt', type: 'file', size: '1.6 KB', content: 'JOURNAL ENTRY #1\n=================\nDate: Unknown\nLevel: 0 (I think)\n\nI found this terminal today. It was just\nsitting in the middle of a room, glowing.\nThe screen said "Back OS" and played some\nkind of startup sound.\n\nI don\'t know how long I\'ve been here.\nThe fluorescent lights make it impossible\nto tell time. My watch stopped working\nthe moment I arrived.\n\nI tried the door at the end of the hall.\nIt led to another hall. And another.\nAnd another.\n\nThe carpet is always damp.\n\nI hear footsteps sometimes. But when I\nlook, there\'s no one there.\n\nI\'m going to try to use this computer to\nfind a way out. There has to be a map\nsomewhere. There has to be an exit.\n\nThere has to be.\n\n...\n\nRight?' },
-    ],
-  },
+// System files that always appear (read-only)
+const SYSTEM_FILES: FileEntry[] = [
+  { id: 'sys-1', name: 'system.ini', type: 'file', path: '/BackOS', owner: 'system', system: true, size: 180, content: '[BackOS Configuration]\nversion=4.0.011\ntheme=fluorescent_yellow\nexit_enabled=false\nentity_monitoring=ACTIVE\nhum_frequency=60Hz\n\n; Do not modify these values' },
+  { id: 'sys-2', name: 'autoexec.bat', type: 'file', path: '/BackOS', owner: 'system', system: true, size: 120, content: '@echo off\necho Welcome to Back OS...\necho Initializing entity detection...\necho There is no exit command.\npause >nul' },
+  { id: 'sys-3', name: 'safety_guide.txt', type: 'file', path: '/Level_0', owner: 'system', system: true, size: 310, content: 'LEVEL 0 SAFETY GUIDE\n====================\n1. Stay in well-lit areas\n2. Do not investigate strange sounds\n3. The buzzing is normal\n4. If you see a door, do not open it\n5. If the lights flicker, stand still\n6. You are being watched. For your safety.\n7. There is no Level -1. Stop asking.' },
+  { id: 'sys-4', name: 'fluorescent_log.dat', type: 'file', path: '/Level_0', owner: 'system', system: true, size: 480, content: 'FLUORESCENT LIGHT LOG\n=====================\nLight #00001: ACTIVE - 60Hz\nLight #00002: ACTIVE - 60Hz\nLight #00003: ACTIVE - 61Hz - WARNING\nLight #04571: ACTIVE - 60Hz\nLight #99999: ACTIVE - 0Hz - [DATA EXPUNGED]\n\nNote: Light #00003 flagged.\nEntity presence suspected.' },
+  { id: 'sys-5', name: 'entity_warning.txt', type: 'file', path: '/Level_1', owner: 'system', system: true, size: 250, content: 'ENTITY WARNING - LEVEL 1\n========================\nType: Smiler\nLocation: Dark corners\nThreat: EXTREME\n\nREMINDER: If you see eyes in the\ndarkness, DO NOT smile back.' },
+  { id: 'sys-6', name: 'behavioral_patterns.dat', type: 'file', path: '/Entity_Data', owner: 'system', system: true, size: 400, content: 'ENTITY 1: SMILER\n=================\nClassification: Hostile\nHabitat: Dark areas, all levels\nMovement Speed: Unknown\nAttack Pattern: Unknown (no survivors)\nWeakness: Sustained light exposure\n\n"I have been studying them for weeks.\nI think they know."' },
+  { id: 'sys-7', name: 'exit_instructions_CORRUPTED.txt', type: 'file', path: '/', owner: 'system', system: true, size: 200, content: 'T̸o̶ ̵e̵x̶i̸t̴:\n1̶.̸ F̵i̸n̷d̵ ̵t̸h̵e̷ ̵d̷o̴o̶r̷\n2̸.̶ T̶u̶r̶n̸ ̸t̵h̸e̶ ̸h̸a̸n̵d̵l̵e̸\n3̵.̵ [̸C̸O̸R̶R̶U̶P̵T̸E̷D̶]̴\n4̵.̵ [̶D̵A̷T̷A̷ ̶L̸O̶S̸T̵]̷\n\nW̷A̵R̸N̷I̶N̸G̸:̷ T̵h̷i̴s̶ ̸f̷i̸l̸e̷ ̴w̷a̵s̷\nc̵o̴r̶r̷u̸p̸t̸e̵d̷.̵ P̷e̴r̶h̸a̷p̵s̷ i̷n̵t̷e̵n̸t̵i̶o̸n̸a̸l̵l̵y̵.' },
+  { id: 'sys-8', name: 'journal_entry_01.txt', type: 'file', path: '/', owner: 'system', system: true, size: 320, content: 'JOURNAL ENTRY #1\n=================\nI found this terminal today. The screen\nsaid "Back OS".\n\nI don\'t know how long I\'ve been here.\nThe fluorescent lights make it impossible\nto tell time.\n\nI tried the door at the end of the hall.\nIt led to another hall. And another.\n\nThe carpet is always damp.\n\nI\'m going to try to find a way out.\nThere has to be an exit.\n\n...Right?' },
 ];
+
+const SYSTEM_FOLDERS = ['/BackOS', '/Level_0', '/Level_1', '/Entity_Data'];
 
 export default function BackFilesExplorer({ windowId: _windowId }: Props) {
   const { state } = useAppContext();
-  const username = getUsername(state.user);
-  const fileSystem = buildFileSystem(username);
+  const username = state.user?.username || 'anonymous';
+  const token = state.user?.token;
 
-  const [currentPath, setCurrentPath] = useState('C:\\BackOS');
+  const [currentPath, setCurrentPath] = useState('/');
+  const [files, setFiles] = useState<FileEntry[]>([]);
+  const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<FileEntry | null>(null);
-  const [previewFile, setPreviewFile] = useState<FileEntry | null>(null);
 
-  const findFolder = (nodes: FolderNode[], path: string): FolderNode | undefined => {
-    for (const node of nodes) {
-      const nodePath = node.path.replace('{username}', username);
-      if (nodePath === path) return node;
-      if (node.children) {
-        const found = findFolder(node.children, path);
-        if (found) return found;
+  // Dialog states
+  const [dialog, setDialog] = useState<'none' | 'newFile' | 'newFolder' | 'edit' | 'view'>('none');
+  const [dialogName, setDialogName] = useState('');
+  const [dialogContent, setDialogContent] = useState('');
+  const [editingFile, setEditingFile] = useState<FileEntry | null>(null);
+
+  const fetchFiles = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/files?owner=${encodeURIComponent(username)}&path=${encodeURIComponent(currentPath)}`);
+      if (res.ok) {
+        const data = await res.json();
+        // Merge with system files for this path
+        const sysFiles = SYSTEM_FILES.filter(f => f.path === currentPath);
+        const sysFolderNames = SYSTEM_FOLDERS
+          .filter(f => {
+            const parent = f.substring(0, f.lastIndexOf('/')) || '/';
+            return parent === currentPath;
+          })
+          .map(f => ({
+            id: `sysfolder-${f}`,
+            name: f.split('/').pop()!,
+            type: 'folder' as const,
+            path: currentPath,
+            owner: 'system',
+            system: true,
+          }));
+        const userFiles: FileEntry[] = data.files || [];
+        setFiles([...sysFolderNames, ...sysFiles, ...userFiles]);
+      } else {
+        // API not available — show system files only
+        const sysFiles = SYSTEM_FILES.filter(f => f.path === currentPath);
+        const sysFolderNames = SYSTEM_FOLDERS
+          .filter(f => {
+            const parent = f.substring(0, f.lastIndexOf('/')) || '/';
+            return parent === currentPath;
+          })
+          .map(f => ({
+            id: `sysfolder-${f}`,
+            name: f.split('/').pop()!,
+            type: 'folder' as const,
+            path: currentPath,
+            owner: 'system',
+            system: true,
+          }));
+        setFiles([...sysFolderNames, ...sysFiles]);
       }
+    } catch {
+      const sysFiles = SYSTEM_FILES.filter(f => f.path === currentPath);
+      const sysFolderNames = SYSTEM_FOLDERS
+        .filter(f => {
+          const parent = f.substring(0, f.lastIndexOf('/')) || '/';
+          return parent === currentPath;
+        })
+        .map(f => ({
+          id: `sysfolder-${f}`,
+          name: f.split('/').pop()!,
+          type: 'folder' as const,
+          path: currentPath,
+          owner: 'system',
+          system: true,
+        }));
+      setFiles([...sysFolderNames, ...sysFiles]);
+    } finally {
+      setLoading(false);
     }
-    return undefined;
-  };
+  }, [currentPath, username]);
 
-  const currentFolder = findFolder(fileSystem, currentPath);
-  const currentFiles = currentFolder?.files ?? [];
-  const currentChildren = currentFolder?.children ?? [];
+  useEffect(() => { fetchFiles(); }, [fetchFiles]);
 
-  const getAllFileCount = () => {
-    let count = 0;
-    const countFiles = (nodes: FolderNode[]) => {
-      for (const n of nodes) {
-        count += n.files.length;
-        if (n.children) countFiles(n.children);
-      }
-    };
-    countFiles(fileSystem);
-    return count;
-  };
-
-  const renderTree = (nodes: FolderNode[], depth = 0) =>
-    nodes.map((node) => {
-      const nodePath = node.path.replace('{username}', username);
-      return (
-        <div key={nodePath}>
-          <div
-            className={`${styles.treeItem} ${currentPath === nodePath ? styles.treeItemActive : ''}`}
-            onClick={() => setCurrentPath(nodePath)}
-            style={{ paddingLeft: 4 + depth * 12 }}
-          >
-            <span className={styles.treeIcon}>
-              {currentPath === nodePath ? '&#128194;' : '&#128193;'}
-            </span>
-            <span>{node.name === 'Users' ? username : node.name}</span>
-          </div>
-          {node.children && (
-            <div>{renderTree(node.children, depth + 1)}</div>
-          )}
-        </div>
-      );
-    });
-
-  const handleFileClick = (file: FileEntry) => {
-    setSelectedFile(file);
-  };
-
-  const handleFileDoubleClick = (file: FileEntry) => {
-    if (file.type === 'file' && file.content) {
-      setPreviewFile(file);
-    }
-  };
-
-  const handleFolderDoubleClick = (folder: FolderNode) => {
-    const folderPath = folder.path.replace('{username}', username);
-    setCurrentPath(folderPath);
+  const navigateTo = (path: string) => {
+    setCurrentPath(path);
+    setSelectedFile(null);
   };
 
   const goUp = () => {
-    const parts = currentPath.split('\\');
-    if (parts.length > 2) {
-      setCurrentPath(parts.slice(0, -1).join('\\'));
-    }
+    if (currentPath === '/') return;
+    const parts = currentPath.split('/').filter(Boolean);
+    parts.pop();
+    navigateTo(parts.length === 0 ? '/' : '/' + parts.join('/'));
+  };
+
+  const openFolder = (folder: FileEntry) => {
+    const newPath = currentPath === '/' ? `/${folder.name}` : `${currentPath}/${folder.name}`;
+    navigateTo(newPath);
+  };
+
+  const openFile = (file: FileEntry) => {
+    setEditingFile(file);
+    setDialogContent(file.content || '');
+    setDialog(file.system ? 'view' : 'edit');
+  };
+
+  const handleCreateFile = async () => {
+    if (!dialogName.trim() || !token) return;
+    try {
+      await fetch('/api/files', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ name: dialogName.trim(), path: currentPath, type: 'file', content: dialogContent }),
+      });
+      setDialog('none');
+      setDialogName('');
+      setDialogContent('');
+      fetchFiles();
+    } catch { /* silent */ }
+  };
+
+  const handleCreateFolder = async () => {
+    if (!dialogName.trim() || !token) return;
+    try {
+      await fetch('/api/files', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ name: dialogName.trim(), path: currentPath, type: 'folder' }),
+      });
+      setDialog('none');
+      setDialogName('');
+      fetchFiles();
+    } catch { /* silent */ }
+  };
+
+  const handleSaveFile = async () => {
+    if (!editingFile || !token) return;
+    try {
+      await fetch('/api/files', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ id: editingFile.id, content: dialogContent }),
+      });
+      setDialog('none');
+      setEditingFile(null);
+      fetchFiles();
+    } catch { /* silent */ }
+  };
+
+  const handleDelete = async (file: FileEntry) => {
+    if (file.system || !token) return;
+    try {
+      await fetch(`/api/files?id=${file.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setSelectedFile(null);
+      fetchFiles();
+    } catch { /* silent */ }
+  };
+
+  const folders = files.filter(f => f.type === 'folder');
+  const regularFiles = files.filter(f => f.type === 'file');
+
+  const formatSize = (size?: number) => {
+    if (!size) return '';
+    if (size < 1024) return `${size} B`;
+    return `${(size / 1024).toFixed(1)} KB`;
+  };
+
+  const getIcon = (file: FileEntry) => {
+    if (file.type === 'folder') return '📂';
+    if (file.name.endsWith('.dat')) return '📊';
+    if (file.name.endsWith('.bat') || file.name.endsWith('.ini')) return '⚙️';
+    if (file.name.endsWith('.wav') || file.name.endsWith('.mp3')) return '🎵';
+    if (file.name.endsWith('.map') || file.name.endsWith('.schematic')) return '🗺️';
+    if (file.name.includes('CORRUPTED')) return '⚠️';
+    return '📄';
   };
 
   return (
     <div className={styles.container}>
+      {/* Toolbar */}
       <div className={styles.toolbar}>
-        <button className={styles.navButton} title="Back">{'<'}</button>
-        <button className={styles.navButton} title="Forward">{'>'}</button>
-        <button className={styles.navButton} title="Up" onClick={goUp}>{'...'}</button>
-        <input
-          className={styles.addressBar}
-          value={currentPath}
-          onChange={(e) => setCurrentPath(e.target.value)}
-          readOnly
-        />
+        <button className={styles.navButton} title="Up" onClick={goUp} disabled={currentPath === '/'}>↑</button>
+        <button className={styles.navButton} title="Refresh" onClick={fetchFiles}>⟳</button>
+        <input className={styles.addressBar} value={`C:${currentPath.replace(/\//g, '\\')}`} readOnly />
       </div>
 
-      <div className={styles.body}>
-        <div className={styles.sidebar}>
-          {renderTree(fileSystem)}
+      {/* Action bar */}
+      {token && (
+        <div className={styles.actionBar}>
+          <button className={styles.actionButton} onClick={() => { setDialog('newFile'); setDialogName(''); setDialogContent(''); }}>📄 New File</button>
+          <button className={styles.actionButton} onClick={() => { setDialog('newFolder'); setDialogName(''); }}>📁 New Folder</button>
+          {selectedFile && !selectedFile.system && (
+            <button className={styles.actionButton} onClick={() => handleDelete(selectedFile)}>🗑️ Delete</button>
+          )}
         </div>
+      )}
 
-        <div className={styles.fileList}>
-          {currentChildren.map((child) => {
-            const childPath = child.path.replace('{username}', username);
-            return (
-              <div
-                key={childPath}
-                className={styles.fileItem}
-                onDoubleClick={() => handleFolderDoubleClick(child)}
-              >
-                <span className={styles.fileIcon}>&#128193;</span>
-                <span className={styles.fileName}>{child.name}</span>
-              </div>
-            );
-          })}
-          {currentFiles.map((file) => (
-            <div
-              key={file.name}
-              className={`${styles.fileItem} ${selectedFile?.name === file.name ? styles.fileItemSelected : ''}`}
-              onClick={() => handleFileClick(file)}
-              onDoubleClick={() => handleFileDoubleClick(file)}
-            >
-              <span className={styles.fileIcon}>
-                {file.name.endsWith('.wav') ? '&#127925;' : file.name.endsWith('.dat') ? '&#128202;' : file.name.endsWith('.map') || file.name.endsWith('.schematic') ? '&#128506;' : '&#128196;'}
-              </span>
-              <span className={styles.fileName}>{file.name}</span>
-              <span className={styles.fileSize}>{file.size}</span>
+      {/* Body */}
+      <div className={styles.body}>
+        {/* Sidebar - quick nav */}
+        <div className={styles.sidebar}>
+          <div className={`${styles.treeItem} ${currentPath === '/' ? styles.treeItemActive : ''}`} onClick={() => navigateTo('/')}>
+            <span className={styles.treeIcon}>💻</span> C:\
+          </div>
+          {SYSTEM_FOLDERS.map(f => (
+            <div key={f} className={`${styles.treeItem} ${currentPath === f ? styles.treeItemActive : ''}`} onClick={() => navigateTo(f)} style={{ paddingLeft: 16 }}>
+              <span className={styles.treeIcon}>📁</span> {f.split('/').pop()}
             </div>
           ))}
+          <div className={`${styles.treeItem} ${currentPath === '/My_Files' ? styles.treeItemActive : ''}`} onClick={() => navigateTo('/My_Files')} style={{ paddingLeft: 16 }}>
+            <span className={styles.treeIcon}>📁</span> My_Files
+          </div>
+        </div>
+
+        {/* File list */}
+        <div className={styles.fileList}>
+          {loading && <div style={{ padding: 12, color: 'var(--color-text-secondary)' }}>Loading...</div>}
+
+          {!loading && folders.map(f => (
+            <div key={f.id} className={styles.fileItem} onDoubleClick={() => openFolder(f)}>
+              <span className={styles.fileIcon}>📂</span>
+              <span className={styles.fileName}>{f.name}</span>
+              <span className={styles.fileSize}>{f.system ? 'System' : ''}</span>
+            </div>
+          ))}
+
+          {!loading && regularFiles.map(f => (
+            <div
+              key={f.id}
+              className={`${styles.fileItem} ${selectedFile?.id === f.id ? styles.fileItemSelected : ''}`}
+              onClick={() => setSelectedFile(f)}
+              onDoubleClick={() => openFile(f)}
+            >
+              <span className={styles.fileIcon}>{getIcon(f)}</span>
+              <span className={styles.fileName}>{f.name}</span>
+              <span className={styles.fileSize}>{f.system ? 'System' : formatSize(f.size)}</span>
+            </div>
+          ))}
+
+          {!loading && folders.length === 0 && regularFiles.length === 0 && (
+            <div style={{ padding: 12, color: 'var(--color-text-secondary)', textAlign: 'center' }}>
+              Empty folder. The void stares back.
+            </div>
+          )}
         </div>
       </div>
 
-      {previewFile && (
-        <div className={styles.previewOverlay} onClick={() => setPreviewFile(null)}>
-          <div className={styles.previewWindow} onClick={(e) => e.stopPropagation()}>
+      {/* New File Dialog */}
+      {dialog === 'newFile' && (
+        <div className={styles.previewOverlay} onClick={() => setDialog('none')}>
+          <div className={styles.previewWindow} onClick={e => e.stopPropagation()}>
             <div className={styles.previewTitleBar}>
-              <span>{previewFile.name}</span>
-              <button className={styles.previewCloseBtn} onClick={() => setPreviewFile(null)}>X</button>
+              <span>New File</span>
+              <button className={styles.previewCloseBtn} onClick={() => setDialog('none')}>X</button>
             </div>
-            <div className={`${styles.previewContent} ${previewFile.name.includes('CORRUPTED') ? styles.corruptedText : ''}`}>
-              {previewFile.content}
+            <div className={styles.dialogBody}>
+              <div style={{ fontSize: 11, marginBottom: 4 }}>File name:</div>
+              <input className={styles.dialogInput} value={dialogName} onChange={e => setDialogName(e.target.value)} placeholder="document.txt" autoFocus />
+              <div style={{ fontSize: 11, marginBottom: 4 }}>Content:</div>
+              <textarea className={styles.editArea} style={{ height: 120 }} value={dialogContent} onChange={e => setDialogContent(e.target.value)} placeholder="Type file contents..." />
+              <div className={styles.dialogButtons}>
+                <button className={styles.actionButton} onClick={handleCreateFile} disabled={!dialogName.trim()}>Create</button>
+                <button className={styles.actionButton} onClick={() => setDialog('none')}>Cancel</button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
+      {/* New Folder Dialog */}
+      {dialog === 'newFolder' && (
+        <div className={styles.previewOverlay} onClick={() => setDialog('none')}>
+          <div className={styles.previewWindow} onClick={e => e.stopPropagation()}>
+            <div className={styles.previewTitleBar}>
+              <span>New Folder</span>
+              <button className={styles.previewCloseBtn} onClick={() => setDialog('none')}>X</button>
+            </div>
+            <div className={styles.dialogBody}>
+              <div style={{ fontSize: 11, marginBottom: 4 }}>Folder name:</div>
+              <input className={styles.dialogInput} value={dialogName} onChange={e => setDialogName(e.target.value)} placeholder="New Folder" autoFocus />
+              <div className={styles.dialogButtons}>
+                <button className={styles.actionButton} onClick={handleCreateFolder} disabled={!dialogName.trim()}>Create</button>
+                <button className={styles.actionButton} onClick={() => setDialog('none')}>Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View File (system/read-only) */}
+      {dialog === 'view' && editingFile && (
+        <div className={styles.previewOverlay} onClick={() => setDialog('none')}>
+          <div className={styles.previewWindow} onClick={e => e.stopPropagation()}>
+            <div className={styles.previewTitleBar}>
+              <span>{editingFile.name}</span>
+              <button className={styles.previewCloseBtn} onClick={() => setDialog('none')}>X</button>
+            </div>
+            <div className={`${styles.previewContent} ${editingFile.name.includes('CORRUPTED') ? styles.corruptedText : ''}`}>
+              {editingFile.content}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit File */}
+      {dialog === 'edit' && editingFile && (
+        <div className={styles.previewOverlay} onClick={() => setDialog('none')}>
+          <div className={styles.previewWindow} onClick={e => e.stopPropagation()} style={{ width: 500, maxHeight: 400 }}>
+            <div className={styles.previewTitleBar}>
+              <span>Edit: {editingFile.name}</span>
+              <button className={styles.previewCloseBtn} onClick={() => setDialog('none')}>X</button>
+            </div>
+            <textarea className={styles.editArea} style={{ height: 250 }} value={dialogContent} onChange={e => setDialogContent(e.target.value)} />
+            <div className={styles.dialogBody} style={{ padding: '4px 12px 8px' }}>
+              <div className={styles.dialogButtons}>
+                <button className={styles.actionButton} onClick={handleSaveFile}>Save</button>
+                <button className={styles.actionButton} onClick={() => setDialog('none')}>Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Status bar */}
       <div className={styles.statusBar}>
-        <span>{currentFiles.length + currentChildren.length} object(s) | {getAllFileCount()} total files</span>
-        <span>Connected to The BackRoom&trade; Cloud</span>
+        <span>{files.length} object(s) in {currentPath}</span>
+        <span>Connected to The BackRoom™ Cloud</span>
       </div>
     </div>
   );

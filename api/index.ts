@@ -379,6 +379,73 @@ export default async function handler(req: any, res: any) {
       return res.status(405).json({ error: 'Method not allowed' });
     }
 
+    // ---- FILES ----
+    if (seg[0] === 'files') {
+      const db = await getDb();
+      const u = await getUser(req);
+
+      if (req.method === 'GET') {
+        // List files for a user at a path
+        const owner = String(req.query?.owner || u || 'anonymous').toLowerCase();
+        const path = String(req.query?.path || '/');
+        const files = await db.collection('files').find({ owner, path }).sort({ type: 1, name: 1 }).toArray();
+        return res.status(200).json({ files });
+      }
+
+      if (req.method === 'POST') {
+        if (!u) return res.status(401).json({ error: 'Auth required' });
+        const { name, path, type, content } = req.body;
+        if (!name || !path) return res.status(400).json({ error: 'Name and path required' });
+        const fileType = type === 'folder' ? 'folder' : 'file';
+        // Check duplicate
+        const exists = await db.collection('files').findOne({ owner: u, path, name });
+        if (exists) return res.status(409).json({ error: 'File already exists' });
+        const file = {
+          id: genId(),
+          owner: u,
+          name: String(name).slice(0, 100),
+          path: String(path),
+          type: fileType,
+          content: fileType === 'file' ? String(content || '').slice(0, 100000) : '',
+          size: fileType === 'file' ? (content ? String(content).length : 0) : 0,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        };
+        await db.collection('files').insertOne(file);
+        return res.status(201).json({ file });
+      }
+
+      if (req.method === 'PUT') {
+        if (!u) return res.status(401).json({ error: 'Auth required' });
+        const { id, name, content } = req.body;
+        if (!id) return res.status(400).json({ error: 'File ID required' });
+        const file = await db.collection('files').findOne({ id, owner: u });
+        if (!file) return res.status(404).json({ error: 'File not found' });
+        const update: any = { updatedAt: Date.now() };
+        if (name) update.name = String(name).slice(0, 100);
+        if (content !== undefined) { update.content = String(content).slice(0, 100000); update.size = String(content).length; }
+        await db.collection('files').updateOne({ id, owner: u }, { $set: update });
+        return res.status(200).json(await db.collection('files').findOne({ id }));
+      }
+
+      if (req.method === 'DELETE') {
+        if (!u) return res.status(401).json({ error: 'Auth required' });
+        const id = req.query?.id || req.body?.id;
+        if (!id) return res.status(400).json({ error: 'File ID required' });
+        const file = await db.collection('files').findOne({ id: String(id), owner: u });
+        if (!file) return res.status(404).json({ error: 'File not found' });
+        // If folder, delete all children
+        if (file.type === 'folder') {
+          const folderPath = file.path === '/' ? `/${file.name}` : `${file.path}/${file.name}`;
+          await db.collection('files').deleteMany({ owner: u, path: { $regex: `^${folderPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}` } });
+        }
+        await db.collection('files').deleteOne({ id: String(id), owner: u });
+        return res.status(200).json({ deleted: true });
+      }
+
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
+
     return res.status(404).json({ error: 'Not found' });
   } catch (err: any) {
     console.error('API error:', err);
