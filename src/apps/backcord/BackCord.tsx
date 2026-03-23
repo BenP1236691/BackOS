@@ -33,7 +33,7 @@ function avatarColor(name: string): string {
   return colors[Math.abs(hash) % colors.length];
 }
 
-export default function BackCord({ windowId: _windowId }: Props) {
+export default function Discord({ windowId: _windowId }: Props) {
   const { state } = useAppContext();
   const [channel, setChannel] = useState('general');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -112,7 +112,7 @@ export default function BackCord({ windowId: _windowId }: Props) {
       <div className={styles.container}>
         <div className={styles.offlineContainer}>
           <div className={styles.offlineTitle}>Connection Lost</div>
-          <div>Cannot reach the BackCord servers. The signal fades between levels...</div>
+          <div>Cannot reach the Discord servers. The connection fades between levels...</div>
         </div>
       </div>
     );

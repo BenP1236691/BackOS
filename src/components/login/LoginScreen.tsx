@@ -6,7 +6,7 @@ import '../../styles/win95.css';
 type Mode = 'login' | 'register';
 
 export default function LoginScreen() {
-  const { state, dispatch } = useAppContext();
+  const { dispatch } = useAppContext();
   const [mode, setMode] = useState<Mode>('login');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');

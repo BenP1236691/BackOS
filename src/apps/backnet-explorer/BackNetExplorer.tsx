@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import { useAppContext } from '../../store/AppContext';
 import styles from './BackNetExplorer.module.css';
+import Discord from '../backcord/BackCord';
+import RedditApp from '../backit/BackIt';
+import FourChanApp from '../backchan/BackChan';
+import TheBackRoomApp from '../the-backroom/TheBackRoom';
 
 interface Props {
   windowId: string;
@@ -61,7 +65,14 @@ const preBuiltResults = [
   },
 ];
 
-type PageView = 'home' | 'wiki' | 'site';
+type PageView = 'home' | 'wiki' | 'site' | 'webapp';
+
+const WEBAPP_MAP: Record<string, { component: React.FC<{ windowId: string }>; name: string }> = {
+  'discord.backrooms.net': { component: Discord, name: 'Discord' },
+  'reddit.backrooms.net': { component: RedditApp, name: 'Reddit' },
+  '4chan.backrooms.net': { component: FourChanApp, name: '4chan' },
+  'the-backroom.backrooms.net': { component: TheBackRoomApp, name: 'The BackRoom™' },
+};
 
 export default function BackNetExplorer({ windowId: _windowId }: Props) {
   const { state } = useAppContext();
@@ -77,6 +88,7 @@ export default function BackNetExplorer({ windowId: _windowId }: Props) {
   const [wikiPage, setWikiPage] = useState<WikiPage | null>(null);
   const [wikiLoading, setWikiLoading] = useState(false);
   const [wikiError, setWikiError] = useState<string | null>(null);
+  const [activeWebapp, setActiveWebapp] = useState<string | null>(null);
   const [history, setHistory] = useState<string[]>(['backnet://search.backrooms.net']);
   const [historyIdx, setHistoryIdx] = useState(0);
 
@@ -116,6 +128,14 @@ export default function BackNetExplorer({ windowId: _windowId }: Props) {
   const handleNavigateToUrl = useCallback((url: string) => {
     navigate(url);
 
+    // Check if it's a webapp URL (e.g. backnet://discord.backrooms.net)
+    const webappMatch = url.match(/^backnet:\/\/([a-z0-9\-]+\.backrooms\.net)/);
+    if (webappMatch && WEBAPP_MAP[webappMatch[1]]) {
+      setPageView('webapp');
+      setActiveWebapp(webappMatch[1]);
+      return;
+    }
+
     // Check if it's a wiki URL
     const wikiPath = WIKI_URL_MAP[url];
     if (wikiPath) {
@@ -140,6 +160,7 @@ export default function BackNetExplorer({ windowId: _windowId }: Props) {
 
     // Default: go home
     setPageView('home');
+    setActiveWebapp(null);
   }, [navigate, fetchWikiPage]);
 
   const handleResultClick = (result: typeof preBuiltResults[0]) => {
@@ -260,6 +281,12 @@ export default function BackNetExplorer({ windowId: _windowId }: Props) {
       </div>
 
       <div className={styles.content}>
+        {/* Webapp view (Discord, Reddit, 4chan, The BackRoom) */}
+        {pageView === 'webapp' && activeWebapp && WEBAPP_MAP[activeWebapp] && (() => {
+          const WebApp = WEBAPP_MAP[activeWebapp].component;
+          return <WebApp windowId={_windowId} />;
+        })()}
+
         {/* Deployed site view */}
         {pageView === 'site' && viewingSiteId && (
           <iframe
@@ -349,6 +376,30 @@ export default function BackNetExplorer({ windowId: _windowId }: Props) {
             )}
 
             <div className={styles.databaseSection}>
+              <div className={styles.databaseTitle}>💬 BackNET Social</div>
+              <div className={styles.resultItem}>
+                <div className={styles.resultLink} onClick={() => handleNavigateToUrl('backnet://discord.backrooms.net')}>Discord</div>
+                <div className={styles.resultUrl}>backnet://discord.backrooms.net</div>
+                <div className={styles.resultDesc}>Real-time chat across the Backrooms. Channels for every level.</div>
+              </div>
+              <div className={styles.resultItem}>
+                <div className={styles.resultLink} onClick={() => handleNavigateToUrl('backnet://reddit.backrooms.net')}>Reddit</div>
+                <div className={styles.resultUrl}>backnet://reddit.backrooms.net</div>
+                <div className={styles.resultDesc}>The front page of the Backrooms. Posts, discussions, and survival tips.</div>
+              </div>
+              <div className={styles.resultItem}>
+                <div className={styles.resultLink} onClick={() => handleNavigateToUrl('backnet://4chan.backrooms.net')}>4chan</div>
+                <div className={styles.resultUrl}>backnet://4chan.backrooms.net</div>
+                <div className={styles.resultDesc}>Anonymous imageboard. Green-text your way through the levels.</div>
+              </div>
+              <div className={styles.resultItem}>
+                <div className={styles.resultLink} onClick={() => handleNavigateToUrl('backnet://the-backroom.backrooms.net')}>The BackRoom™ Forum</div>
+                <div className={styles.resultUrl}>backnet://the-backroom.backrooms.net</div>
+                <div className={styles.resultDesc}>Official forums. Level reports, entity sightings, and trading post.</div>
+              </div>
+            </div>
+
+            <div className={styles.databaseSection}>
               <div className={styles.databaseTitle}>General Public Database</div>
               {preBuiltResults.map((result, i) => (
                 <div key={i} className={styles.resultItem}>
@@ -365,6 +416,8 @@ export default function BackNetExplorer({ windowId: _windowId }: Props) {
       <div className={styles.statusBar}>
         {pageView === 'wiki' && wikiLoading
           ? 'Loading...'
+          : pageView === 'webapp' && activeWebapp
+          ? `${WEBAPP_MAP[activeWebapp]?.name || 'App'} | ${address}`
           : pageView === 'site'
           ? `Viewing site | backnet://sites.backrooms.net/${viewingSiteId}`
           : `Done | ${address}`}

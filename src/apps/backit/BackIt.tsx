@@ -42,7 +42,7 @@ function timeAgo(ts: number): string {
   return `${days}d ago`;
 }
 
-export default function BackIt({ windowId: _windowId }: Props) {
+export default function Reddit({ windowId: _windowId }: Props) {
   const { state } = useAppContext();
   const [board, setBoard] = useState('general');
   const [posts, setPosts] = useState<Post[]>([]);
@@ -67,8 +67,8 @@ export default function BackIt({ windowId: _windowId }: Props) {
       if (!res.ok) throw new Error('Failed to fetch posts');
       const data = await res.json();
       setPosts(data.posts || []);
-    } catch (err: any) {
-      setError(err.message);
+    } catch {
+      setPosts([]);
     } finally {
       setLoading(false);
     }
@@ -147,10 +147,10 @@ export default function BackIt({ windowId: _windowId }: Props) {
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <span className={styles.headerTitle}>BackIt&#8482;</span>
+          <span className={styles.headerTitle}>Reddit</span>
         </div>
         <div className={styles.offlineContainer}>
-          <div className={styles.offlineTitle}>Cannot reach BackIt servers</div>
+          <div className={styles.offlineTitle}>Cannot reach Reddit</div>
           <div>The connection between levels is unstable. Try again later.</div>
         </div>
       </div>
@@ -161,7 +161,7 @@ export default function BackIt({ windowId: _windowId }: Props) {
     <div className={styles.container}>
       <div className={styles.header}>
         <div>
-          <span className={styles.headerTitle}>BackIt&#8482;</span>
+          <span className={styles.headerTitle}>Reddit</span>
           <span className={styles.headerSub}> &mdash; The front page of the Backrooms</span>
         </div>
       </div>
@@ -300,7 +300,7 @@ export default function BackIt({ windowId: _windowId }: Props) {
 
       <div className={styles.statusBar}>
         <span>/{board} | {posts.length} posts</span>
-        <span>BackIt&#8482; v1.0</span>
+        <span>Reddit — Backrooms Edition</span>
       </div>
     </div>
   );

@@ -53,7 +53,7 @@ function renderBody(text: string) {
   });
 }
 
-export default function BackChan({ windowId: _windowId }: Props) {
+export default function FourChan({ windowId: _windowId }: Props) {
   const { state } = useAppContext();
   const [board, setBoard] = useState('random');
   const [posts, setPosts] = useState<Post[]>([]);
@@ -81,8 +81,8 @@ export default function BackChan({ windowId: _windowId }: Props) {
       if (!res.ok) throw new Error('Failed to fetch threads');
       const data = await res.json();
       setPosts(data.posts || []);
-    } catch (err: any) {
-      setError(err.message);
+    } catch {
+      setPosts([]);
     } finally {
       setLoading(false);
     }
@@ -161,7 +161,7 @@ export default function BackChan({ windowId: _windowId }: Props) {
     return (
       <div className={styles.container}>
         <div className={styles.boardBar}>
-          <span className={styles.boardBarLabel}>BackChan</span>
+          <span className={styles.boardBarLabel}>4chan</span>
         </div>
         <div className={styles.offlineContainer}>
           <div className={styles.offlineTitle}>Connection Error</div>
@@ -174,7 +174,7 @@ export default function BackChan({ windowId: _windowId }: Props) {
   return (
     <div className={styles.container}>
       <div className={styles.boardBar}>
-        <span className={styles.boardBarLabel}>BackChan</span>
+        <span className={styles.boardBarLabel}>4chan</span>
         {BOARDS.map((b) => (
           <button
             key={b.id}
@@ -189,7 +189,7 @@ export default function BackChan({ windowId: _windowId }: Props) {
       <div className={styles.header}>
         <div>
           <span className={styles.headerTitle}>{currentBoard.slug} - {currentBoard.name}</span>
-          <div className={styles.headerSub}>BackChan Imageboard - The Backrooms Edition</div>
+          <div className={styles.headerSub}>4chan — The Backrooms</div>
         </div>
         {token && !selectedPost && (
           <button className={styles.newThreadBtn} onClick={() => setShowForm(true)}>
@@ -311,7 +311,7 @@ export default function BackChan({ windowId: _windowId }: Props) {
 
       <div className={styles.statusBar}>
         <span>{currentBoard.slug} | {posts.length} threads</span>
-        <span>BackChan v1.0</span>
+        <span>4chan — Backrooms Edition</span>
       </div>
     </div>
   );

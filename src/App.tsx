@@ -18,9 +18,6 @@ import BackStore from './apps/backstore/BackStore';
 import DrawBack from './apps/drawback/DrawBack';
 import JohnBackrooms from './apps/john-backrooms/JohnBackrooms';
 import BackNetDeploy from './apps/backnet-deploy/BackNetDeploy';
-import BackCord from './apps/backcord/BackCord';
-import BackIt from './apps/backit/BackIt';
-import BackChan from './apps/backchan/BackChan';
 import TheBackRoom from './apps/the-backroom/TheBackRoom';
 
 import './styles/themes.css';
@@ -37,9 +34,6 @@ const APP_COMPONENTS: Record<string, React.FC<{ windowId: string }>> = {
   'drawback': DrawBack,
   'john-backrooms': JohnBackrooms,
   'backnet-deploy': BackNetDeploy,
-  'backcord': BackCord,
-  'backit': BackIt,
-  'backchan': BackChan,
   'the-backroom': TheBackRoom,
 };
 

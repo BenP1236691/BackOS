@@ -77,8 +77,7 @@ export default function BackNetDeploy({ windowId: _windowId }: Props) {
       if (!res.ok) throw new Error('Failed to fetch sites');
       const data = await res.json();
       setSites(data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch {
       setSites([]);
     } finally {
       setLoading(false);
