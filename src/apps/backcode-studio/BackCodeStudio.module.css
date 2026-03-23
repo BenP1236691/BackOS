@@ -26,11 +26,39 @@
   background: var(--color-primary);
 }
 
+.menuItemDisabled {
+  padding: 2px 8px;
+  font-size: 12px;
+  color: var(--border-shadow);
+  cursor: not-allowed;
+}
+
+.menuItemDisabled:hover {
+  background: transparent;
+}
+
+.runButton {
+  font-weight: bold;
+}
+
+.runButton:hover {
+  background: #4a6600;
+  color: #90EE90;
+}
+
+.editorWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .editorArea {
   flex: 1;
   display: flex;
   overflow: hidden;
   background: #1a1800;
+  position: relative;
 }
 
 .lineNumbers {
@@ -91,6 +119,131 @@
   gap: 16px;
 }
 
+/* Autocomplete dropdown */
+.autocompleteDropdown {
+  position: absolute;
+  z-index: 1000;
+  background: var(--color-surface);
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light),
+    inset -2px -2px 0 0 var(--border-shadow),
+    inset 2px 2px 0 0 var(--border-highlight),
+    3px 3px 6px rgba(0, 0, 0, 0.4);
+  min-width: 180px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.autocompleteItem {
+  padding: 3px 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--color-text);
+}
+
+.autocompleteItem:hover {
+  background: var(--color-primary);
+}
+
+.autocompleteItemSelected {
+  background: var(--color-primary);
+}
+
+.autocompleteLabel {
+  font-weight: bold;
+}
+
+.autocompleteDetail {
+  color: var(--border-shadow);
+  font-size: 10px;
+  font-style: italic;
+}
+
+/* Console panel */
+.consolePanel {
+  height: 150px;
+  border-top: 2px solid var(--border-shadow);
+  display: flex;
+  flex-direction: column;
+  background: #0a0800;
+  flex-shrink: 0;
+}
+
+.consoleTitleBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 8px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--border-shadow);
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--color-text);
+  flex-shrink: 0;
+}
+
+.consoleBtns {
+  display: flex;
+  gap: 4px;
+}
+
+.consoleClearBtn,
+.consoleCloseBtn {
+  background: var(--color-surface);
+  border: none;
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light);
+  padding: 1px 6px;
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: 10px;
+}
+
+.consoleClearBtn:active,
+.consoleCloseBtn:active {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark);
+}
+
+.consoleBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #90EE90;
+}
+
+.consoleEmpty {
+  color: #706020;
+  font-style: italic;
+  padding: 8px 0;
+}
+
+.consoleLine {
+  display: flex;
+  gap: 8px;
+  word-break: break-all;
+}
+
+.consoleError {
+  color: #FF4444;
+}
+
+.consoleTimestamp {
+  color: #706020;
+  flex-shrink: 0;
+}
+
+/* Easter egg */
 .easterEggOverlay {
   position: absolute;
   top: 0;

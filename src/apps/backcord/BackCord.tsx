@@ -21,6 +21,34 @@ const CHANNELS = [
   { id: 'off-topic', name: 'off-topic' },
 ];
 
+function renderMessageBody(body: string): React.ReactNode {
+  const imageRegex = /\[IMAGE\](.*?)\[\/IMAGE\]/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = imageRegex.exec(body)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(body.substring(lastIndex, match.index));
+    }
+    parts.push(
+      <img
+        key={match.index}
+        src={match[1]}
+        alt="Shared drawing"
+        style={{ maxWidth: '100%', maxHeight: 200, display: 'block', marginTop: 4, border: '1px solid #3a3000' }}
+      />
+    );
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < body.length) {
+    parts.push(body.substring(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : body;
+}
+
 function formatTime(ts: number): string {
   const d = new Date(ts);
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -164,7 +192,7 @@ export default function Discord({ windowId: _windowId }: Props) {
                   <span className={styles.messageAuthor}>{msg.author}</span>
                   <span className={styles.messageTime}>{formatTime(msg.timestamp)}</span>
                 </div>
-                <div className={styles.messageBody}>{msg.body}</div>
+                <div className={styles.messageBody}>{renderMessageBody(msg.body)}</div>
               </div>
             </div>
           ))}

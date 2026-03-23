@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useAppContext } from '../../store/AppContext';
 import styles from './DrawBack.module.css';
 
 interface Props {
@@ -8,9 +9,11 @@ interface Props {
 const BRUSH_SIZES = [2, 5, 10, 20];
 
 export default function DrawBack({ windowId: _windowId }: Props) {
+  const { state } = useAppContext();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [color, setColor] = useState('#FFD700');
+  const [postStatus, setPostStatus] = useState<string | null>(null);
   const [brushSize, setBrushSize] = useState(5);
   const [isEraser, setIsEraser] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -98,6 +101,40 @@ export default function DrawBack({ windowId: _windowId }: Props) {
     link.click();
   };
 
+  const postToDiscord = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const token = state.user?.token;
+    if (!token) {
+      setPostStatus('Log in first!');
+      setTimeout(() => setPostStatus(null), 2000);
+      return;
+    }
+    const dataUrl = canvas.toDataURL('image/png');
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          channel: 'general',
+          body: `[IMAGE]${dataUrl}[/IMAGE]`,
+          author: state.user?.username || 'Anonymous',
+        }),
+      });
+      if (res.ok) {
+        setPostStatus('Posted!');
+      } else {
+        setPostStatus('Failed to post');
+      }
+    } catch {
+      setPostStatus('Error posting');
+    }
+    setTimeout(() => setPostStatus(null), 2000);
+  };
+
   const handleMenuClick = (menu: string) => {
     setOpenMenu(openMenu === menu ? null : menu);
   };
@@ -114,6 +151,7 @@ export default function DrawBack({ windowId: _windowId }: Props) {
             <div className={styles.menuDropdown}>
               <div className={styles.menuDropdownItem} onClick={clearCanvas}>New</div>
               <div className={styles.menuDropdownItem} onClick={saveAsPng}>Save as PNG</div>
+              <div className={styles.menuDropdownItem} onClick={postToDiscord}>Post to Discord</div>
             </div>
           )}
         </div>
@@ -160,6 +198,11 @@ export default function DrawBack({ windowId: _windowId }: Props) {
         <button className={styles.clearBtn} onClick={clearCanvas}>
           Clear All
         </button>
+
+        <button className={styles.discordBtn} onClick={postToDiscord}>
+          Post to Discord
+        </button>
+        {postStatus && <span className={styles.postStatus}>{postStatus}</span>}
       </div>
 
       <div ref={containerRef} className={styles.canvasContainer}>
