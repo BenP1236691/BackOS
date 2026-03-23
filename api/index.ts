@@ -207,9 +207,10 @@ export default async function handler(req: any, res: any) {
     }
 
     // ---- SERVE SITE HTML (for /site/:id via rewrite) ----
-    if (seg[0] === 'site' || (req.url && req.url.startsWith('/site/'))) {
-      const parts = (req.url || '').split('/').filter(Boolean);
-      const id = parts[parts.length - 1];
+    // Vercel rewrites /site/:id to /api/index?id=xxx
+    // Only trigger if seg is empty/index (rewritten) and id query param exists, OR seg[0] is 'site'
+    if (seg[0] === 'site' || (seg.length === 0 && req.query?.id) || (seg[0] === 'index' && req.query?.id)) {
+      const id = String(seg[0] === 'site' ? seg[1] : req.query?.id || '');
       if (!id || id === 'site') return res.status(400).send(errPage('No site', 'Provide a site ID.'));
       const db = await getDb();
       const site = await db.collection('sites').findOne({ id });
