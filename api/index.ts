@@ -1,6 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { createHmac, pbkdf2Sync, randomBytes } from 'crypto';
 import { getDb } from './db';
+
+async function getCrypto() {
+  return await import('node:crypto');
+}
 
 // ============================================================
 // Shared types
@@ -73,12 +76,14 @@ interface ChatMessage {
 // Shared helpers
 // ============================================================
 
-function hashPassword(password: string, salt: string): string {
-  return pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
+async function hashPassword(password: string, salt: string): Promise<string> {
+  const crypto = await getCrypto();
+  return crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
 }
 
-function generateToken(): string {
-  return randomBytes(32).toString('hex');
+async function generateToken(): Promise<string> {
+  const crypto = await getCrypto();
+  return crypto.randomBytes(32).toString('hex');
 }
 
 function generateId(): string {
@@ -166,9 +171,9 @@ async function handleAuthLogin(req: VercelRequest, res: VercelResponse) {
     const db = await getDb();
     const user = await db.collection('users').findOne({ username: cleanUsername }) as UserRecord | null;
     if (!user) return res.status(401).json({ error: 'Invalid username or password' });
-    const hash = hashPassword(String(password), user.salt);
+    const hash = await hashPassword(String(password), user.salt);
     if (hash !== user.passwordHash) return res.status(401).json({ error: 'Invalid username or password' });
-    const token = generateToken();
+    const token = await generateToken();
     await db.collection('sessions').insertOne({ token, username: cleanUsername, createdAt: new Date() });
     return res.status(200).json({ username: cleanUsername, token });
   } catch (err: any) {
@@ -189,10 +194,11 @@ async function handleAuthRegister(req: VercelRequest, res: VercelResponse) {
     const db = await getDb();
     const existing = await db.collection('users').findOne({ username: cleanUsername });
     if (existing) return res.status(409).json({ error: 'Username already taken' });
-    const salt = randomBytes(16).toString('hex');
-    const passwordHash = hashPassword(String(password), salt);
+    const crypto = await getCrypto();
+    const salt = crypto.randomBytes(16).toString('hex');
+    const passwordHash = await hashPassword(String(password), salt);
     await db.collection('users').insertOne({ username: cleanUsername, passwordHash, salt, createdAt: Date.now() });
-    const token = generateToken();
+    const token = await generateToken();
     await db.collection('sessions').insertOne({ token, username: cleanUsername, createdAt: new Date() });
     return res.status(201).json({ username: cleanUsername, token });
   } catch (err: any) {
@@ -229,10 +235,11 @@ async function handleAuthPassword(req: VercelRequest, res: VercelResponse) {
     if (String(newPassword).length < 4) return res.status(400).json({ error: 'New password must be at least 4 characters' });
     const user = await db.collection('users').findOne({ username: session.username }) as UserRecord | null;
     if (!user) return res.status(404).json({ error: 'User not found' });
-    const currentHash = hashPassword(String(currentPassword), user.salt);
+    const currentHash = await hashPassword(String(currentPassword), user.salt);
     if (currentHash !== user.passwordHash) return res.status(401).json({ error: 'Current password is incorrect' });
-    const newSalt = randomBytes(16).toString('hex');
-    const newHash = hashPassword(String(newPassword), newSalt);
+    const crypto = await getCrypto();
+    const newSalt = crypto.randomBytes(16).toString('hex');
+    const newHash = await hashPassword(String(newPassword), newSalt);
     await db.collection('users').updateOne({ username: session.username }, { $set: { passwordHash: newHash, salt: newSalt } });
     return res.status(200).json({ success: true });
   } catch (err: any) {
