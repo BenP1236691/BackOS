@@ -1,0 +1,149 @@
+.window {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  box-shadow:
+    inset -1px -1px 0 0 #000,
+    inset 1px 1px 0 0 var(--border-light),
+    inset -2px -2px 0 0 var(--border-shadow),
+    inset 2px 2px 0 0 var(--border-highlight),
+    2px 2px 10px rgba(0, 0, 0, 0.3);
+  background: var(--color-surface);
+  min-width: 200px;
+  min-height: 150px;
+}
+
+.window.minimized {
+  display: none;
+}
+
+.titleBar {
+  display: flex;
+  align-items: center;
+  padding: 3px 3px 3px 4px;
+  gap: 4px;
+  cursor: default;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.titleBar.active {
+  background: linear-gradient(90deg, #B8960F, #FFD700);
+}
+
+.titleBar.inactive {
+  background: linear-gradient(90deg, #706020, #A89028);
+}
+
+.titleIcon {
+  width: 16px;
+  height: 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.titleText {
+  flex: 1;
+  font-size: 12px;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 4px;
+}
+
+.titleText.active {
+  color: #fff;
+}
+
+.titleText.inactive {
+  color: #C4A832;
+}
+
+.titleButtons {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.titleButton {
+  width: 16px;
+  height: 14px;
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light);
+  background: var(--color-surface);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: bold;
+  color: var(--color-text);
+  padding: 0;
+  line-height: 1;
+}
+
+.titleButton:active {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark);
+  padding: 1px 0 0 1px;
+}
+
+.content {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  min-height: 0;
+}
+
+/* Resize handles */
+.resizeN, .resizeS, .resizeE, .resizeW,
+.resizeNE, .resizeNW, .resizeSE, .resizeSW {
+  position: absolute;
+}
+
+.resizeN {
+  top: -3px; left: 6px; right: 6px; height: 6px;
+  cursor: n-resize;
+}
+
+.resizeS {
+  bottom: -3px; left: 6px; right: 6px; height: 6px;
+  cursor: s-resize;
+}
+
+.resizeE {
+  top: 6px; right: -3px; bottom: 6px; width: 6px;
+  cursor: e-resize;
+}
+
+.resizeW {
+  top: 6px; left: -3px; bottom: 6px; width: 6px;
+  cursor: w-resize;
+}
+
+.resizeNE {
+  top: -3px; right: -3px; width: 10px; height: 10px;
+  cursor: ne-resize;
+}
+
+.resizeNW {
+  top: -3px; left: -3px; width: 10px; height: 10px;
+  cursor: nw-resize;
+}
+
+.resizeSE {
+  bottom: -3px; right: -3px; width: 10px; height: 10px;
+  cursor: se-resize;
+}
+
+.resizeSW {
+  bottom: -3px; left: -3px; width: 10px; height: 10px;
+  cursor: sw-resize;
+}

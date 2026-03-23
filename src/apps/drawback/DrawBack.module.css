@@ -1,0 +1,170 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--color-surface);
+  font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 12px;
+  color: var(--color-text);
+}
+
+.menuBar {
+  display: flex;
+  gap: 0;
+  padding: 2px 4px;
+  border-bottom: 1px solid var(--border-shadow);
+  background: var(--color-surface);
+}
+
+.menuItem {
+  padding: 2px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  position: relative;
+}
+
+.menuItem:hover {
+  background: var(--color-primary);
+}
+
+.menuDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--color-surface);
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light),
+    2px 2px 6px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  min-width: 120px;
+}
+
+.menuDropdownItem {
+  padding: 4px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.menuDropdownItem:hover {
+  background: var(--color-primary);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-bottom: 1px solid var(--border-shadow);
+  background: var(--color-surface);
+  flex-wrap: wrap;
+}
+
+.toolLabel {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-left: 8px;
+}
+
+.colorPicker {
+  width: 28px;
+  height: 22px;
+  border: 1px solid var(--border-shadow);
+  cursor: pointer;
+  padding: 0;
+  background: none;
+}
+
+.brushBtn {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light);
+  background: var(--color-surface);
+  border: none;
+  padding: 2px 8px;
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: 11px;
+  min-width: auto;
+}
+
+.brushBtn:active {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark);
+}
+
+.brushBtnActive {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark);
+  background: var(--color-primary-light);
+}
+
+.eraserBtn {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light);
+  background: var(--color-surface);
+  border: none;
+  padding: 2px 8px;
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: 11px;
+}
+
+.eraserBtnActive {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark);
+  background: var(--color-error);
+  color: #fff;
+}
+
+.clearBtn {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light);
+  background: var(--color-surface);
+  border: none;
+  padding: 2px 8px;
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: 11px;
+  margin-left: auto;
+}
+
+.clearBtn:active {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark);
+}
+
+.canvasContainer {
+  flex: 1;
+  overflow: hidden;
+  background: #fff;
+  cursor: crosshair;
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark);
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.statusBar {
+  display: flex;
+  justify-content: space-between;
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-shadow);
+  padding: 2px 6px;
+  font-size: 11px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  flex-shrink: 0;
+}

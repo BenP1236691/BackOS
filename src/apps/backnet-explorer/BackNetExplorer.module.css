@@ -1,0 +1,214 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--color-surface);
+  font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 12px;
+  color: var(--color-text);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 4px;
+  border-bottom: 1px solid var(--border-shadow);
+  background: var(--color-surface);
+}
+
+.navButton {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light);
+  background: var(--color-surface);
+  border: none;
+  padding: 2px 8px;
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: 12px;
+  min-width: auto;
+}
+
+.navButton:active {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark);
+}
+
+.addressBar {
+  flex: 1;
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark),
+    inset -2px -2px 0 0 var(--border-highlight),
+    inset 2px 2px 0 0 var(--border-shadow);
+  background: var(--color-input-bg);
+  border: none;
+  padding: 3px 4px;
+  color: var(--color-text);
+  font-size: 12px;
+  outline: none;
+  margin-left: 4px;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--color-input-bg);
+  padding: 20px;
+}
+
+.searchPage {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.searchLogo {
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--color-primary-dark);
+  margin-bottom: 4px;
+}
+
+.searchSubtitle {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.searchForm {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.searchInput {
+  flex: 1;
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark),
+    inset -2px -2px 0 0 var(--border-highlight),
+    inset 2px 2px 0 0 var(--border-shadow);
+  background: #fff;
+  border: none;
+  padding: 4px 6px;
+  font-size: 12px;
+  color: var(--color-text);
+  outline: none;
+}
+
+.searchButton {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light),
+    inset -2px -2px 0 0 var(--border-shadow),
+    inset 2px 2px 0 0 var(--border-highlight);
+  background: var(--color-surface);
+  border: none;
+  padding: 4px 16px;
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: 12px;
+}
+
+.searchButton:active {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark);
+}
+
+.databaseSection {
+  text-align: left;
+  margin-top: 16px;
+}
+
+.databaseTitle {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--color-primary-dark);
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-shadow);
+  padding-bottom: 4px;
+}
+
+.resultItem {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dotted var(--border-shadow);
+}
+
+.resultLink {
+  color: #0000AA;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.resultLink:hover {
+  color: #6600AA;
+}
+
+.resultUrl {
+  color: #006600;
+  font-size: 11px;
+  margin-top: 1px;
+}
+
+.resultDesc {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+.statusBar {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-shadow);
+  padding: 2px 6px;
+  font-size: 11px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  flex-shrink: 0;
+}
+
+.offlinePage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 40px;
+}
+
+.offlineIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.offlineTitle {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--color-error);
+  margin-bottom: 8px;
+}
+
+.offlineMsg {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.fakeResults {
+  text-align: left;
+  margin-top: 16px;
+}
+
+.fakeResultsHeader {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+}

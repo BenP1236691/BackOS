@@ -1,0 +1,293 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--color-surface);
+  font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 12px;
+  color: var(--color-text);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-bottom: 1px solid var(--border-shadow);
+  background: var(--color-surface);
+}
+
+.composeBtn {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light),
+    inset -2px -2px 0 0 var(--border-shadow),
+    inset 2px 2px 0 0 var(--border-highlight);
+  background: var(--color-surface);
+  border: none;
+  padding: 4px 12px;
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: 12px;
+}
+
+.composeBtn:active {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark);
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.inbox {
+  width: 240px;
+  overflow-y: auto;
+  border-right: 1px solid var(--border-shadow);
+  background: var(--color-input-bg);
+  flex-shrink: 0;
+}
+
+.emailItem {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border-shadow);
+  cursor: pointer;
+}
+
+.emailItem:hover {
+  background: var(--color-primary-light);
+}
+
+.emailItemSelected {
+  background: var(--color-primary);
+}
+
+.emailFrom {
+  font-weight: bold;
+  font-size: 11px;
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.emailSubject {
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.emailPreview {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 1px;
+}
+
+.emailView {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  background: var(--color-input-bg);
+}
+
+.emailHeader {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-shadow);
+}
+
+.emailHeaderSubject {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: var(--color-primary-dark);
+}
+
+.emailHeaderFrom {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-bottom: 2px;
+}
+
+.emailHeaderDate {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.emailBody {
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.noEmail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.statusBar {
+  display: flex;
+  justify-content: space-between;
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-shadow);
+  padding: 2px 6px;
+  font-size: 11px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  flex-shrink: 0;
+}
+
+.offlinePage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+}
+
+.offlineIcon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.offlineTitle {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--color-error);
+  margin-bottom: 8px;
+}
+
+.offlineMsg {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.composeOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.composeWindow {
+  background: var(--color-surface);
+  box-shadow:
+    inset -1px -1px 0 0 #000,
+    inset 1px 1px 0 0 var(--border-light),
+    inset -2px -2px 0 0 var(--border-shadow),
+    inset 2px 2px 0 0 var(--border-highlight),
+    3px 3px 12px rgba(0, 0, 0, 0.4);
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.composeTitleBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 4px;
+  background: linear-gradient(90deg, #B8960F, #FFD700);
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.composeCloseBtn {
+  width: 16px;
+  height: 14px;
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light);
+  background: var(--color-surface);
+  border: none;
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: bold;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.composeBody {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.composeField {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.composeLabel {
+  width: 50px;
+  flex-shrink: 0;
+}
+
+.composeInput {
+  flex: 1;
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark);
+  background: var(--color-input-bg);
+  border: none;
+  padding: 3px 4px;
+  font-size: 12px;
+  color: var(--color-text);
+  outline: none;
+}
+
+.composeTextarea {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark);
+  background: var(--color-input-bg);
+  border: none;
+  padding: 4px;
+  font-size: 12px;
+  color: var(--color-text);
+  outline: none;
+  resize: none;
+  height: 120px;
+  font-family: inherit;
+}
+
+.composeSendBtn {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light),
+    inset -2px -2px 0 0 var(--border-shadow),
+    inset 2px 2px 0 0 var(--border-highlight);
+  background: var(--color-surface);
+  border: none;
+  padding: 4px 16px;
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: 12px;
+  align-self: flex-end;
+}

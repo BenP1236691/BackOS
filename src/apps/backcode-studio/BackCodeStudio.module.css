@@ -1,0 +1,130 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--color-surface);
+  font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 12px;
+  color: var(--color-text);
+}
+
+.menuBar {
+  display: flex;
+  gap: 0;
+  padding: 2px 4px;
+  border-bottom: 1px solid var(--border-shadow);
+  background: var(--color-surface);
+}
+
+.menuItem {
+  padding: 2px 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.menuItem:hover {
+  background: var(--color-primary);
+}
+
+.editorArea {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  background: #1a1800;
+}
+
+.lineNumbers {
+  padding: 8px 4px;
+  text-align: right;
+  color: #706020;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  user-select: none;
+  min-width: 36px;
+  border-right: 1px solid #3a3000;
+  background: #141200;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.codeInput {
+  flex: 1;
+  padding: 8px;
+  background: #1a1800;
+  color: #FFD700;
+  border: none;
+  outline: none;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  resize: none;
+  overflow-y: auto;
+  white-space: pre;
+  tab-size: 4;
+}
+
+.codeInput::selection {
+  background: rgba(255, 215, 0, 0.3);
+}
+
+.statusBar {
+  display: flex;
+  justify-content: space-between;
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-shadow);
+  padding: 2px 6px;
+  font-size: 11px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  flex-shrink: 0;
+}
+
+.statusLeft {
+  display: flex;
+  gap: 16px;
+}
+
+.statusRight {
+  display: flex;
+  gap: 16px;
+}
+
+.easterEggOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: pointer;
+}
+
+.flickerText {
+  color: #FFD700;
+  font-family: 'Courier New', monospace;
+  font-size: 20px;
+  text-align: center;
+  animation: flicker 0.15s infinite alternate;
+}
+
+.flickerTextSlow {
+  color: #FF4444;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 20px;
+  animation: flicker 0.5s infinite alternate;
+}
+
+@keyframes flicker {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}

@@ -1,0 +1,66 @@
+:root {
+  --color-primary: #FFD700;
+  --color-primary-dark: #B8960F;
+  --color-primary-light: #FFF3B0;
+  --color-primary-glow: rgba(255, 215, 0, 0.3);
+
+  --color-surface: #C4A832;
+  --color-surface-light: #D4BC50;
+  --color-surface-dark: #8B7500;
+  --color-background: #A89028;
+
+  --color-titlebar-active: linear-gradient(90deg, #B8960F, #FFD700);
+  --color-titlebar-inactive: linear-gradient(90deg, #706020, #A89028);
+  --color-titlebar-text-active: #fff;
+  --color-titlebar-text-inactive: #C4A832;
+
+  --color-text: #1a1a00;
+  --color-text-secondary: #4a4a20;
+  --color-text-disabled: #8B8B60;
+
+  --color-desktop-bg: #2a2800;
+  --color-taskbar-bg: #B8960F;
+  --color-menu-bg: #C4A832;
+  --color-input-bg: #FFF8DC;
+
+  --color-scrollbar-track: #A89028;
+
+  --border-light: #FFF8DC;
+  --border-highlight: #FFFACD;
+  --border-shadow: #706020;
+  --border-dark: #3a3000;
+
+  --color-error: #FF4444;
+  --color-success: #44FF44;
+  --color-link: #4444FF;
+
+  --taskbar-height: 36px;
+}
+
+[data-theme="dark"] {
+  --color-surface: #2a2400;
+  --color-surface-light: #3a3200;
+  --color-surface-dark: #1a1600;
+  --color-background: #1a1600;
+
+  --color-titlebar-active: linear-gradient(90deg, #8B6900, #FFD700);
+  --color-titlebar-inactive: linear-gradient(90deg, #2a2400, #4a3800);
+  --color-titlebar-text-active: #000;
+  --color-titlebar-text-inactive: #706020;
+
+  --color-text: #FFD700;
+  --color-text-secondary: #B8960F;
+  --color-text-disabled: #706020;
+
+  --color-desktop-bg: #0d0d00;
+  --color-taskbar-bg: #1a1600;
+  --color-menu-bg: #2a2400;
+  --color-input-bg: #1a1600;
+
+  --color-scrollbar-track: #1a1600;
+
+  --border-light: #B8960F;
+  --border-highlight: #706020;
+  --border-shadow: #0d0d00;
+  --border-dark: #000000;
+}

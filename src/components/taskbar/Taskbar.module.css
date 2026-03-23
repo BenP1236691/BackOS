@@ -1,0 +1,216 @@
+.taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: var(--taskbar-height);
+  background: var(--color-taskbar-bg);
+  box-shadow:
+    inset 0 1px 0 0 var(--border-light),
+    inset 0 2px 0 0 var(--border-highlight);
+  display: flex;
+  align-items: center;
+  padding: 2px 4px;
+  gap: 2px;
+  z-index: 9999;
+}
+
+.startButton {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light),
+    inset -2px -2px 0 0 var(--border-shadow),
+    inset 2px 2px 0 0 var(--border-highlight);
+  background: var(--color-surface);
+  border: none;
+  padding: 2px 8px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: bold;
+  font-size: 12px;
+  color: var(--color-text);
+  flex-shrink: 0;
+}
+
+.startButton:active, .startButton.active {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-highlight),
+    inset 1px 1px 0 0 var(--border-dark),
+    inset -2px -2px 0 0 var(--border-light),
+    inset 2px 2px 0 0 var(--border-shadow);
+  padding: 3px 7px 1px 9px;
+}
+
+.startIcon {
+  font-size: 16px;
+}
+
+.divider {
+  width: 2px;
+  height: 24px;
+  margin: 0 2px;
+  box-shadow:
+    inset 1px 0 0 0 var(--border-shadow),
+    inset -1px 0 0 0 var(--border-light);
+}
+
+.windowButtons {
+  flex: 1;
+  display: flex;
+  gap: 2px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.windowButton {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light);
+  background: var(--color-surface);
+  border: none;
+  padding: 2px 6px;
+  height: 24px;
+  min-width: 120px;
+  max-width: 180px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-shrink: 1;
+}
+
+.windowButton.focused {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-highlight),
+    inset 1px 1px 0 0 var(--border-dark);
+  background: var(--color-surface-dark);
+  font-weight: bold;
+}
+
+.windowButton:hover {
+  background: var(--color-surface-light);
+}
+
+.windowButtonIcon {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.windowButtonText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tray {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 4px;
+  height: 24px;
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-shadow);
+  flex-shrink: 0;
+}
+
+.trayIcon {
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+.trayIcon:hover {
+  color: var(--color-primary);
+}
+
+.clock {
+  font-size: 11px;
+  color: var(--color-text);
+  padding: 0 4px;
+  white-space: nowrap;
+}
+
+.startMenu {
+  position: fixed;
+  bottom: var(--taskbar-height);
+  left: 0;
+  width: 220px;
+  background: var(--color-menu-bg);
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light),
+    inset -2px -2px 0 0 var(--border-shadow),
+    inset 2px 2px 0 0 var(--border-highlight),
+    3px -3px 10px rgba(0, 0, 0, 0.4);
+  z-index: 10001;
+  display: flex;
+}
+
+.startMenuSidebar {
+  width: 24px;
+  background: linear-gradient(to top, #B8960F, #FFD700);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 8px;
+}
+
+.startMenuSidebarText {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+  letter-spacing: 2px;
+}
+
+.startMenuItems {
+  flex: 1;
+  padding: 2px;
+}
+
+.startMenuItem {
+  padding: 6px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-text);
+}
+
+.startMenuItem:hover {
+  background: var(--color-primary);
+  color: #000;
+}
+
+.startMenuIcon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.startMenuSeparator {
+  height: 2px;
+  margin: 2px 2px;
+  box-shadow:
+    inset 0 1px 0 0 var(--border-shadow),
+    inset 0 -1px 0 0 var(--border-light);
+}
+
+.startMenuVersion {
+  padding: 4px 12px;
+  font-size: 10px;
+  color: var(--color-text-secondary);
+}

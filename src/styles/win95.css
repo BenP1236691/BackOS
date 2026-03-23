@@ -1,0 +1,172 @@
+.win95-raised {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light),
+    inset -2px -2px 0 0 var(--border-shadow),
+    inset 2px 2px 0 0 var(--border-highlight);
+  background: var(--color-surface);
+}
+
+.win95-sunken {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark),
+    inset -2px -2px 0 0 var(--border-highlight),
+    inset 2px 2px 0 0 var(--border-shadow);
+  background: var(--color-input-bg);
+}
+
+.win95-button {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light),
+    inset -2px -2px 0 0 var(--border-shadow),
+    inset 2px 2px 0 0 var(--border-highlight);
+  background: var(--color-surface);
+  border: none;
+  padding: 4px 12px;
+  min-width: 75px;
+  min-height: 23px;
+  color: var(--color-text);
+  cursor: pointer;
+  outline: none;
+  font-size: 12px;
+}
+
+.win95-button:active {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-highlight),
+    inset 1px 1px 0 0 var(--border-dark),
+    inset -2px -2px 0 0 var(--border-light),
+    inset 2px 2px 0 0 var(--border-shadow);
+  padding: 5px 11px 3px 13px;
+}
+
+.win95-button:focus-visible {
+  outline: 1px dotted var(--color-text);
+  outline-offset: -4px;
+}
+
+.win95-button:disabled {
+  color: var(--color-text-disabled);
+  cursor: default;
+}
+
+.win95-input {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark),
+    inset -2px -2px 0 0 var(--border-highlight),
+    inset 2px 2px 0 0 var(--border-shadow);
+  background: var(--color-input-bg);
+  border: none;
+  padding: 3px 4px;
+  color: var(--color-text);
+  outline: none;
+  font-size: 12px;
+}
+
+.win95-input:focus {
+  outline: none;
+}
+
+.win95-window-border {
+  box-shadow:
+    inset -1px -1px 0 0 #000,
+    inset 1px 1px 0 0 var(--border-light),
+    inset -2px -2px 0 0 var(--border-shadow),
+    inset 2px 2px 0 0 var(--border-highlight);
+  background: var(--color-surface);
+}
+
+.win95-menu-item {
+  padding: 4px 24px 4px 28px;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--color-text);
+  position: relative;
+}
+
+.win95-menu-item:hover {
+  background: var(--color-primary);
+  color: #000;
+}
+
+.win95-separator {
+  height: 2px;
+  margin: 2px 2px;
+  box-shadow:
+    0 0 0 0 transparent,
+    inset 0 1px 0 0 var(--border-shadow),
+    inset 0 -1px 0 0 var(--border-light);
+}
+
+.win95-tab {
+  box-shadow:
+    inset -1px 0 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light),
+    inset -2px 0 0 0 var(--border-shadow),
+    inset 2px 2px 0 0 var(--border-highlight);
+  background: var(--color-surface);
+  border: none;
+  padding: 4px 12px;
+  cursor: pointer;
+  color: var(--color-text);
+  position: relative;
+  bottom: -1px;
+}
+
+.win95-tab-active {
+  box-shadow:
+    inset -1px 0 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light),
+    inset -2px 0 0 0 var(--border-shadow),
+    inset 2px 2px 0 0 var(--border-highlight);
+  padding-bottom: 6px;
+  z-index: 1;
+}
+
+.win95-status-bar {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-shadow);
+  padding: 2px 4px;
+  font-size: 11px;
+  color: var(--color-text);
+}
+
+.win95-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-bottom: 1px solid var(--border-shadow);
+}
+
+.win95-toolbar-button {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light);
+  background: var(--color-surface);
+  border: none;
+  padding: 2px 6px;
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: 12px;
+  min-width: auto;
+  min-height: auto;
+}
+
+.win95-toolbar-button:hover {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-dark),
+    inset 1px 1px 0 0 var(--border-light),
+    inset -2px -2px 0 0 var(--border-shadow),
+    inset 2px 2px 0 0 var(--border-highlight);
+}
+
+.win95-toolbar-button:active {
+  box-shadow:
+    inset -1px -1px 0 0 var(--border-light),
+    inset 1px 1px 0 0 var(--border-dark);
+}
