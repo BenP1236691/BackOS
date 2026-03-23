@@ -1,7 +1,6 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDb } from './_lib/db';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: any, res: any) {
   const url = new URL(req.url || '', `http://${req.headers.host}`);
   const pathParts = url.pathname.split('/').filter(Boolean);
   const id = pathParts[pathParts.length - 1];

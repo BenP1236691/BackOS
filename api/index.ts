@@ -1,4 +1,3 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDb } from './_lib/db';
 
 async function getCrypto() {
@@ -95,13 +94,13 @@ function generateId(): string {
   return id;
 }
 
-function setCors(res: VercelResponse) {
+function setCors(res: any) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 }
 
-async function authenticate(req: VercelRequest): Promise<string | null> {
+async function authenticate(req: any): Promise<string | null> {
   const auth = req.headers.authorization;
   if (!auth || !auth.startsWith('Bearer ')) return null;
   const token = auth.slice(7);
@@ -162,7 +161,7 @@ const EXAMPLE_SITES: SiteData[] = [
 // Route handlers
 // ============================================================
 
-async function handleAuthLogin(req: VercelRequest, res: VercelResponse) {
+async function handleAuthLogin(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   try {
     const { username, password } = req.body;
@@ -182,7 +181,7 @@ async function handleAuthLogin(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-async function handleAuthRegister(req: VercelRequest, res: VercelResponse) {
+async function handleAuthRegister(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   try {
     const { username, password } = req.body;
@@ -207,7 +206,7 @@ async function handleAuthRegister(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-async function handleAuthVerify(req: VercelRequest, res: VercelResponse) {
+async function handleAuthVerify(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   try {
     const token = req.headers.authorization?.replace('Bearer ', '');
@@ -222,7 +221,7 @@ async function handleAuthVerify(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-async function handleAuthPassword(req: VercelRequest, res: VercelResponse) {
+async function handleAuthPassword(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   try {
     const token = req.headers.authorization?.replace('Bearer ', '');
@@ -248,7 +247,7 @@ async function handleAuthPassword(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-async function handleSitesList(req: VercelRequest, res: VercelResponse) {
+async function handleSitesList(req: any, res: any) {
   try {
     const db = await getDb();
     if (req.method === 'GET') {
@@ -274,7 +273,7 @@ async function handleSitesList(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-async function handleSiteById(req: VercelRequest, res: VercelResponse, id: string) {
+async function handleSiteById(req: any, res: any, id: string) {
   if (!id) return res.status(400).json({ error: 'Missing site ID' });
   try {
     const db = await getDb();
@@ -311,7 +310,7 @@ async function handleSiteById(req: VercelRequest, res: VercelResponse, id: strin
   }
 }
 
-async function handleWiki(req: VercelRequest, res: VercelResponse) {
+async function handleWiki(req: any, res: any) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
   const { path } = req.query;
   if (!path || typeof path !== 'string') return res.status(400).json({ error: 'Missing wiki path' });
@@ -333,7 +332,7 @@ async function handleWiki(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-async function handleSeed(req: VercelRequest, res: VercelResponse) {
+async function handleSeed(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
   try {
     const db = await getDb();
@@ -352,7 +351,7 @@ async function handleSeed(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-async function handleMessages(req: VercelRequest, res: VercelResponse) {
+async function handleMessages(req: any, res: any) {
   try {
     const db = await getDb();
     if (req.method === 'GET') {
@@ -377,7 +376,7 @@ async function handleMessages(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-async function handlePostsList(req: VercelRequest, res: VercelResponse) {
+async function handlePostsList(req: any, res: any) {
   try {
     const db = await getDb();
     if (req.method === 'GET') {
@@ -404,7 +403,7 @@ async function handlePostsList(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-async function handlePostById(req: VercelRequest, res: VercelResponse, id: string) {
+async function handlePostById(req: any, res: any, id: string) {
   if (!id) return res.status(400).json({ error: 'Missing post ID' });
   try {
     const db = await getDb();
@@ -430,7 +429,7 @@ async function handlePostById(req: VercelRequest, res: VercelResponse, id: strin
   }
 }
 
-async function handleForumList(req: VercelRequest, res: VercelResponse) {
+async function handleForumList(req: any, res: any) {
   try {
     const db = await getDb();
     if (req.method === 'GET') {
@@ -454,7 +453,7 @@ async function handleForumList(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-async function handleForumById(req: VercelRequest, res: VercelResponse, id: string) {
+async function handleForumById(req: any, res: any, id: string) {
   if (!id) return res.status(400).json({ error: 'Missing thread ID' });
   try {
     const db = await getDb();
@@ -480,7 +479,7 @@ async function handleForumById(req: VercelRequest, res: VercelResponse, id: stri
   }
 }
 
-async function handleChat(req: VercelRequest, res: VercelResponse) {
+async function handleChat(req: any, res: any) {
   try {
     const db = await getDb();
     if (req.method === 'GET') {
@@ -511,7 +510,7 @@ async function handleChat(req: VercelRequest, res: VercelResponse) {
 // Main router
 // ============================================================
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: any, res: any) {
   setCors(res);
   if (req.method === 'OPTIONS') return res.status(200).end();
 
